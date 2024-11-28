@@ -9,16 +9,18 @@
         android:roundIcon="@mipmap/ic_icono_principal_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Orgalife">
-
         <activity
             android:name=".view.LoginActivity"
-            android:exported="true">
+            android:exported="false" />
+        <activity
+            android:name=".view.PantallaCargaActivity"
+            android:exported="true"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".view.MenuActivity"
             android:exported="false" />

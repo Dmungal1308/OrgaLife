@@ -37,11 +37,11 @@ class LoginActivity : AppCompatActivity() {
             if (isPasswordVisible) {
                 // Ocultar contraseña
                 passwordEditText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-                togglePasswordButton.setImageResource(R.mipmap.ic_ojo_cerrado) // Cambiar ícono
+                togglePasswordButton.setImageResource(R.mipmap.ic_ojo_cerrado_foreground) // Cambiar ícono
             } else {
                 // Mostrar contraseña
                 passwordEditText.inputType = InputType.TYPE_CLASS_TEXT
-                togglePasswordButton.setImageResource(R.mipmap.ic_ojo_contrasenna)
+                togglePasswordButton.setImageResource(R.mipmap.ic_ojo_contrasenna_foreground)
             }
             isPasswordVisible = !isPasswordVisible
             passwordEditText.setSelection(passwordEditText.text.length)

@@ -1,0 +1,42 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.MenuActivity"
+    android:background="@color/supeficie">
+
+  <ImageButton
+      android:id="@+id/imageButton"
+      android:layout_width="50dp"
+      android:layout_height="49dp"
+      android:layout_marginStart="16dp"
+      android:layout_marginTop="16dp"
+      android:background="@null"
+      android:scaleType="fitCenter"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:srcCompat="@mipmap/ic_barra_menu_foreground" />
+
+  <ImageButton
+      android:id="@+id/imageButton3"
+      android:layout_width="53dp"
+      android:layout_height="49dp"
+      android:layout_marginTop="16dp"
+      android:layout_marginEnd="16dp"
+      android:background="@null"
+      android:scaleType="fitCenter"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:srcCompat="@mipmap/ic_icono_principal_foreground" />
+
+  <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/recyclerView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_marginTop="90dp"
+      android:scrollbars="vertical"
+      app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,4 +2,37 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="primario">#314a12</color>
+    <color name="enPrimario">#ffffff</color>
+    <color name="secundario">#3c462f</color>
+    <color name="enSecundario">#ffffff</color>
+    <color name="terciario">#1a4a47</color>
+    <color name="enTerciario">#ffffff</color>
+    <color name="contenedorPrimario">#617d3f</color>
+    <color name="enContenedorPrimario">#ffffff</color>
+    <color name="contenedorSecundario">#6e785e</color>
+    <color name="enContenedorSecundario">#ffffff</color>
+    <color name="contenedorTerciario">#4f7d79</color>
+    <color name="enContenedorTerciario">#ffffff</color>
+    <color name="error">#8c0009</color>
+    <color name="enError">#ffffff</color>
+    <color name="contenedorError">#da342e</color>
+    <color name="enContenedorError">#ffffff</color>
+    <color name="supeficieOscura">#dadbd0</color>
+    <color name="supeficie">#f9faef</color>
+    <color name="supeficieClara">#f9faef</color>
+    <color name="supeficieInversa">#2f312a</color>
+    <color name="enSupeficieInversa">#f1f2e6</color>
+    <color name="primarioInversa">#b1d18a</color>
+    <color name="superficieContenedorMasBajo">#ffffff</color>
+    <color name="superficieContenedorBajo">#f3f4e9</color>
+    <color name="superficieContenedor">#eeefe3</color>
+    <color name="superficieContenedorAlta">#e8e9de</color>
+    <color name="superficieContenedorMasAlta">#e2e3d8</color>
+    <color name="enSuperficie">#1a1c16</color>
+    <color name="enSuperficieVariante">#404439</color>
+    <color name="contorno">#5d6155</color>
+    <color name="varianteContorno">#787c70</color>
+    <color name="scrim">#000000</color>
+    <color name="sombra">#000000</color>
 </resources>

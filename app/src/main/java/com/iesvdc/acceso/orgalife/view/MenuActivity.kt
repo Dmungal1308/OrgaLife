@@ -9,6 +9,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.iesvdc.acceso.orgalife.R
 import com.iesvdc.acceso.orgalife.adapter.ExerciseAdapter
+import com.iesvdc.acceso.orgalife.data.Exercise
 import com.iesvdc.acceso.orgalife.data.ExerciseRepository
 import com.iesvdc.acceso.orgalife.databinding.ActivityMenuBinding
 
@@ -17,7 +18,7 @@ class MenuActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMenuBinding
     private val exercises = ExerciseRepository.getExercises() // Lista de ejercicios
-    private lateinit var adapter: ExerciseAdapter
+    lateinit var adapter: ExerciseAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,15 +38,39 @@ class MenuActivity : AppCompatActivity() {
             insets
         }
 
-        // Crear el adaptador y pasar la función para eliminar
-        adapter = ExerciseAdapter(exercises) { exercise ->
-            // Aquí eliminamos el ejercicio de la lista y notificamos al adaptador
-            exercises.remove(exercise)
-            adapter.notifyDataSetChanged()  // Notificamos al RecyclerView que los datos han cambiado
-        }
+        // Configurar el adaptador con todas las funciones
+        adapter = ExerciseAdapter(
+            exercises,
+            onDeleteClicked = { exercise ->
+                exercises.remove(exercise)
+                adapter.notifyDataSetChanged()
+            },
+            onEditClicked = { exercise ->
+                showEditExerciseDialog(exercise)
+            },
+            onAddClicked = { 
+                showAddExerciseDialog()
+            }
+        )
 
         // Configuración del RecyclerView
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
+
+        // Configurar el click listener para el FloatingActionButton
+        binding.addExerciseButton.setOnClickListener {
+            showAddExerciseDialog()
+        }
+    }
+
+    private fun showAddExerciseDialog() {
+        AddExerciseDialogFragment().show(supportFragmentManager, "AddExerciseDialog")
+    }
+
+    private fun showEditExerciseDialog(exercise: Exercise) {
+        EditExerciseDialogFragment.newInstance(exercise).show(
+            supportFragmentManager, 
+            "EditExerciseDialog"
+        )
     }
 }

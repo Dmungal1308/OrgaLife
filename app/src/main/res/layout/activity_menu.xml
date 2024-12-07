@@ -39,4 +39,17 @@
       android:layout_marginTop="90dp"
       android:scrollbars="vertical"
       app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+  <com.google.android.material.floatingactionbutton.FloatingActionButton
+      android:id="@+id/addExerciseButton"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_margin="16dp"
+      android:src="@mipmap/ic_add_foreground"
+      app:maxImageSize="60dp"
+      app:fabCustomSize="56dp"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      android:backgroundTint="@color/superficieContenedorMasAlta"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

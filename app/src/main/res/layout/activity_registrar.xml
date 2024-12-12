@@ -8,7 +8,7 @@
     tools:context=".view.RegistrarActivity"
     android:background="@color/supeficie">
 
-    <!-- Nombre -->
+    <!-- Usuario (antes Nombre) -->
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="124dp"
@@ -21,18 +21,18 @@
         app:srcCompat="@mipmap/ic_icono_principal_foreground" />
 
     <TextView
-        android:id="@+id/textViewNombre"
+        android:id="@+id/textViewUsuario"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
         android:layout_marginTop="30dp"
-        android:text="Nombre"
+        android:text="Usuario"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <EditText
-        android:id="@+id/editTextNombre"
+        android:id="@+id/editTextUsuario"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
@@ -41,22 +41,22 @@
         android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewNombre" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewUsuario" />
 
-    <!-- Apellidos -->
+    <!-- Nombre y Apellidos (antes Apellidos) -->
     <TextView
-        android:id="@+id/textViewApellidos"
+        android:id="@+id/textViewNombreApellidos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
         android:layout_marginTop="20dp"
-        android:text="Apellidos"
+        android:text="Nombre y Apellidos"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextNombre" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextUsuario" />
 
     <EditText
-        android:id="@+id/editTextApellidos"
+        android:id="@+id/editTextNombreApellidos"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
@@ -65,7 +65,7 @@
         android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewApellidos" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewNombreApellidos" />
 
     <!-- Correo -->
     <TextView
@@ -77,7 +77,7 @@
         android:text="Correo electrónico"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextApellidos" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextNombreApellidos" />
 
     <EditText
         android:id="@+id/editTextCorreo"

@@ -1,25 +1,26 @@
 package com.iesvdc.acceso.orgalife.view
 
-import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
+import com.google.firebase.firestore.FirebaseFirestore
 import com.iesvdc.acceso.orgalife.R
-import java.text.SimpleDateFormat
-import java.util.*
 
 class RegistrarActivity : AppCompatActivity() {
-    private lateinit var editTextNombre: EditText
-    private lateinit var editTextApellidos: EditText
-    private lateinit var editTextFechaNacimiento: EditText
+    private lateinit var editTextUsuario: EditText
+    private lateinit var editTextNombreApellidos: EditText
     private lateinit var editTextCorreo: EditText
     private lateinit var editTextPassword: EditText
     private lateinit var editTextRepeatPassword: EditText
     private lateinit var auth: FirebaseAuth
-    private var fechaNacimiento: Calendar = Calendar.getInstance()
+    private lateinit var buttonRegistrar: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +30,6 @@ class RegistrarActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
 
         initViews()
-        setupDatePicker()
 
         findViewById<Button>(R.id.buttonRegistrar).setOnClickListener {
             if (validateFields()) {
@@ -39,56 +39,22 @@ class RegistrarActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
-        editTextNombre = findViewById(R.id.editTextNombre)
-        editTextApellidos = findViewById(R.id.editTextApellidos)
-        editTextFechaNacimiento = findViewById(R.id.editTextFechaNacimiento)
+        editTextUsuario = findViewById(R.id.editTextUsuario)
+        editTextNombreApellidos = findViewById(R.id.editTextNombreApellidos)
         editTextCorreo = findViewById(R.id.editTextCorreo)
         editTextPassword = findViewById(R.id.editTextPassword)
         editTextRepeatPassword = findViewById(R.id.editTextRepeatPassword)
-    }
-
-    private fun setupDatePicker() {
-        val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-            fechaNacimiento.set(Calendar.YEAR, year)
-            fechaNacimiento.set(Calendar.MONTH, month)
-            fechaNacimiento.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-            updateDateInView()
-        }
-
-        editTextFechaNacimiento.setOnClickListener {
-            DatePickerDialog(
-                this,
-                dateSetListener,
-                fechaNacimiento.get(Calendar.YEAR),
-                fechaNacimiento.get(Calendar.MONTH),
-                fechaNacimiento.get(Calendar.DAY_OF_MONTH)
-            ).apply {
-                val maxDate = Calendar.getInstance()
-                maxDate.add(Calendar.YEAR, -18)
-                datePicker.maxDate = maxDate.timeInMillis
-                
-                val minDate = Calendar.getInstance()
-                minDate.add(Calendar.YEAR, -100)
-                datePicker.minDate = minDate.timeInMillis
-            }.show()
-        }
-    }
-
-    private fun updateDateInView() {
-        val format = "dd/MM/yyyy"
-        val sdf = SimpleDateFormat(format, Locale.getDefault())
-        editTextFechaNacimiento.setText(sdf.format(fechaNacimiento.time))
+        buttonRegistrar = findViewById(R.id.buttonRegistrar)
     }
 
     private fun validateFields(): Boolean {
-        val nombre = editTextNombre.text.toString().trim()
-        val apellidos = editTextApellidos.text.toString().trim()
-        val fechaNac = editTextFechaNacimiento.text.toString().trim()
+        val usuario = editTextUsuario.text.toString().trim()
+        val nombreApellidos = editTextNombreApellidos.text.toString().trim()
         val correo = editTextCorreo.text.toString().trim()
         val password = editTextPassword.text.toString()
         val repeatPassword = editTextRepeatPassword.text.toString()
 
-        if (nombre.isEmpty() || apellidos.isEmpty() || fechaNac.isEmpty() || 
+        if (usuario.isEmpty() || nombreApellidos.isEmpty() || 
             correo.isEmpty() || password.isEmpty() || repeatPassword.isEmpty()) {
             showToast("Todos los campos son obligatorios")
             return false
@@ -113,30 +79,49 @@ class RegistrarActivity : AppCompatActivity() {
     }
 
     private fun registerUser() {
-        val email = editTextCorreo.text.toString().trim()
-        val password = editTextPassword.text.toString()
+        if (validateFields()) {
+            val email = editTextCorreo.text.toString().trim()
+            val password = editTextPassword.text.toString()
 
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    // Enviar email de verificación
-                    auth.currentUser?.sendEmailVerification()
-                        ?.addOnCompleteListener { verificationTask ->
-                            if (verificationTask.isSuccessful) {
-                                showToast("Se ha enviado un correo de verificación a $email")
-                                // Guardar datos adicionales del usuario en Firestore si lo necesitas
-                                saveUserData()
-                                // Redirigir al login
-                                startActivity(Intent(this, LoginActivity::class.java))
-                                finish()
-                            } else {
-                                showToast("Error al enviar el correo de verificación")
+            // Deshabilitar el botón de registro para evitar múltiples clicks
+            buttonRegistrar.isEnabled = false
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        // Enviar email de verificación
+                        auth.currentUser?.sendEmailVerification()
+                            ?.addOnCompleteListener { verificationTask ->
+                                if (verificationTask.isSuccessful) {
+                                    // Guardar datos del usuario
+                                    saveUserData()
+                                    
+                                    showToast("Se ha enviado un correo de verificación a $email")
+                                    
+                                    // Redirigir al login
+                                    startActivity(Intent(this, LoginActivity::class.java))
+                                    finish()
+                                } else {
+                                    showToast("Error al enviar el correo de verificación: ${verificationTask.exception?.message}")
+                                }
+                                // Volver a habilitar el botón
+                                buttonRegistrar.isEnabled = true
                             }
+                    } else {
+                        // Volver a habilitar el botón
+                        buttonRegistrar.isEnabled = true
+                        
+                        // Mostrar error específico
+                        val errorMessage = when (task.exception) {
+                            is FirebaseAuthWeakPasswordException -> "La contraseña debe tener al menos 6 caracteres"
+                            is FirebaseAuthInvalidCredentialsException -> "El correo electrónico no es válido"
+                            is FirebaseAuthUserCollisionException -> "Ya existe una cuenta con este correo electrónico"
+                            else -> "Error en el registro: ${task.exception?.message}"
                         }
-                } else {
-                    showToast("Error en el registro: ${task.exception?.message}")
+                        showToast(errorMessage)
+                    }
                 }
-            }
+        }
     }
 
     private fun saveUserData() {
@@ -144,14 +129,22 @@ class RegistrarActivity : AppCompatActivity() {
         user?.let { firebaseUser ->
             val userData = hashMapOf(
                 "uid" to firebaseUser.uid,
-                "nombre" to editTextNombre.text.toString().trim(),
-                "apellidos" to editTextApellidos.text.toString().trim(),
-                "fechaNacimiento" to editTextFechaNacimiento.text.toString().trim(),
+                "usuario" to editTextUsuario.text.toString().trim(),
+                "nombreCompleto" to editTextNombreApellidos.text.toString().trim(),
                 "email" to editTextCorreo.text.toString().trim()
             )
 
-            // Aquí puedes guardar los datos adicionales en Firestore si lo necesitas
-            // db.collection("users").document(firebaseUser.uid).set(userData)
+            // Guardar en Firestore
+            val db = FirebaseFirestore.getInstance()
+            db.collection("usuarios")
+                .document(firebaseUser.uid)
+                .set(userData)
+                .addOnSuccessListener {
+                    showToast("Datos guardados correctamente")
+                }
+                .addOnFailureListener { e ->
+                    showToast("Error al guardar datos: ${e.message}")
+                }
         }
     }
 

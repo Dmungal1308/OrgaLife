@@ -88,39 +88,158 @@ Métodos principales:
 #### Código:
 ```kotlin:app/src/main/java/com/iesvdc/acceso/orgalife/view/LoginActivity.kt
 class LoginActivity : AppCompatActivity() {
-    private var isPasswordVisible = false
+    // Declaración de variables para los elementos de la interfaz
+    private lateinit var editTextUsuario: EditText
+    private lateinit var editTextPassword: EditText
+    private lateinit var buttonLogin: Button
+    private lateinit var buttonRegistrar: Button
+    private lateinit var buttonTogglePassword: ImageButton
+    private lateinit var textViewForgotPassword: TextView
+    private lateinit var auth: FirebaseAuth
+    private var passwordVisible = false // Controla la visibilidad de la contraseña
 
+    // Método que se llama al crear la actividad
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        // Configuración de la barra de estado para dispositivos con Android M o superior
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.statusBarColor = getColor(R.color.supeficie)
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        }
+        // Verificar si la sesión ya está iniciada
+        val sharedPreferences = getSharedPreferences("SessionPrefs", Context.MODE_PRIVATE)
+        val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
+        if (isLoggedIn) {
+            // Si ya está logueado, redirigir a la actividad del menú
+            startActivity(Intent(this, MenuActivity::class.java))
+            finish() // Finaliza la actividad actual
+            return
+        }
 
-        val usernameEditText = findViewById<EditText>(R.id.editTextText)
-        val passwordEditText = findViewById<EditText>(R.id.editTextPassword)
-        val loginButton = findViewById<Button>(R.id.button)
-        val togglePasswordButton = findViewById<ImageButton>(R.id.buttonTogglePassword)
+        setContentView(R.layout.activity_login) // Establece el diseño de la actividad
 
-        loginButton.setOnClickListener {
-            val username = usernameEditText.text.toString().trim()
-            val password = passwordEditText.text.toString().trim()
+        // Inicializar Firebase Auth
+        auth = FirebaseAuth.getInstance()
 
-            if (username == "root" && password == "1234") {
-                startActivity(Intent(this, MenuActivity::class.java))
-                finish()
+        initViews() // Inicializa las vistas
+        setupListeners() // Configura los listeners para los botones
+    }
+
+    // Método para inicializar las vistas
+    private fun initViews() {
+        editTextUsuario = findViewById(R.id.editTextUsuario)
+        editTextPassword = findViewById(R.id.editTextPassword)
+        buttonLogin = findViewById(R.id.buttonLogin)
+        buttonRegistrar = findViewById(R.id.buttonRegistrar)
+        buttonTogglePassword = findViewById(R.id.buttonTogglePassword)
+        textViewForgotPassword = findViewById(R.id.textViewForgotPassword)
+    }
+
+    // Método para configurar los listeners de los botones
+    private fun setupListeners() {
+        // Listener para el botón de mostrar/ocultar contraseña
+        buttonTogglePassword.setOnClickListener {
+            passwordVisible = !passwordVisible
+            togglePasswordVisibility() // Cambia la visibilidad de la contraseña
+        }
+
+        // Listener para el botón de inicio de sesión
+        buttonLogin.setOnClickListener {
+            val email = editTextUsuario.text.toString().trim()
+            val password = editTextPassword.text.toString()
+
+            // Verifica si las credenciales son las predeterminadas
+            if (email == "admin" && password == "1234") {
+                saveSession() // Guarda la sesión
+                startActivity(Intent(this, MenuActivity::class.java)) // Redirige al menú
+                finish() // Finaliza la actividad actual
             } else {
-                Toast.makeText(this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show()
+                loginUser(email, password) // Intenta iniciar sesión con Firebase
             }
         }
 
-        togglePasswordButton.setOnClickListener {
-            if (isPasswordVisible) {
-                passwordEditText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-                togglePasswordButton.setImageResource(R.mipmap.ic_ojo_cerrado_foreground)
-            } else {
-                passwordEditText.inputType = InputType.TYPE_CLASS_TEXT
-                togglePasswordButton.setImageResource(R.mipmap.ic_ojo_contrasenna_foreground)
-            }
-            isPasswordVisible = !isPasswordVisible
+        // Listener para el botón de registro
+        buttonRegistrar.setOnClickListener {
+            startActivity(Intent(this, RegistrarActivity::class.java)) // Redirige a la actividad de registro
         }
+
+        // Listener para el enlace de "Olvidé mi contraseña"
+        textViewForgotPassword.setOnClickListener {
+            val email = editTextUsuario.text.toString().trim()
+            if (email.isEmpty()) {
+                showToast("Por favor, ingresa tu correo electrónico") // Mensaje de error si el campo está vacío
+                return@setOnClickListener
+            }
+
+            // Verifica si el correo tiene un formato válido
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                showToast("Por favor, ingresa un correo válido") // Mensaje de error si el formato es incorrecto
+                return@setOnClickListener
+            }
+
+            // Envía un correo para restablecer la contraseña
+            auth.sendPasswordResetEmail(email).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    showToast("Se ha enviado un correo para restablecer tu contraseña") // Mensaje de éxito
+                } else {
+                    // Manejo de errores al enviar el correo
+                    val errorMessage = when (task.exception) {
+                        is FirebaseAuthInvalidUserException -> "No existe una cuenta con este correo"
+                        else -> "Error al enviar el correo: ${task.exception?.message}"
+                    }
+                    showToast(errorMessage) // Muestra el mensaje de error
+                }
+            }
+        }
+    }
+
+    // Método para alternar la visibilidad de la contraseña
+    private fun togglePasswordVisibility() {
+        if (passwordVisible) {
+            editTextPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            buttonTogglePassword.setImageResource(R.mipmap.ic_ojo_contrasenna_foreground) // Cambia al ícono de ojo abierto
+        } else {
+            editTextPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            buttonTogglePassword.setImageResource(R.mipmap.ic_ojo_cerrado_foreground) // Cambia al ícono de ojo cerrado
+        }
+        editTextPassword.setSelection(editTextPassword.text.length) // Mantiene el cursor al final del texto
+    }
+
+    // Método para iniciar sesión con Firebase
+    private fun loginUser(email: String, password: String) {
+        if (email.isNotEmpty() && password.isNotEmpty()) {
+            auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val user = auth.currentUser
+                    if (user != null && user.isEmailVerified) {
+                        saveSession() // Guarda la sesión
+                        startActivity(Intent(this, MenuActivity::class.java)) // Redirige al menú
+                        finish() // Finaliza la actividad actual
+                    } else {
+                        showToast("Por favor, verifica tu correo electrónico") // Mensaje si el correo no está verificado
+                        user?.sendEmailVerification() // Envía un correo de verificación
+                    }
+                } else {
+                    showToast("Correo o contraseña incorrectos") // Mensaje de error si las credenciales son incorrectas
+                }
+            }
+        } else {
+            showToast("Por favor, completa todos los campos") // Mensaje si los campos están vacíos
+        }
+    }
+
+    // Método para guardar la sesión del usuario
+    private fun saveSession() {
+        val sharedPreferences = getSharedPreferences("SessionPrefs", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putBoolean("isLoggedIn", true) // Marca la sesión como iniciada
+            apply() // Aplica los cambios
+        }
+    }
+
+    // Método para mostrar mensajes emergentes (Toast)
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show() // Muestra el mensaje
     }
 }
 ```
@@ -135,46 +254,123 @@ Métodos principales:
 #### Código:
 ```kotlin:app/src/main/java/com/iesvdc/acceso/orgalife/view/MenuActivity.kt
 class MenuActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMenuBinding
-    private val exercises = ExerciseRepository.getExercises()
-    lateinit var adapter: ExerciseAdapter
 
+    private lateinit var binding: ActivityMenuBinding // Binding para la vista
+    private val exercises = ExerciseRepository.getExercises() // Lista de ejercicios
+    lateinit var adapter: ExerciseAdapter // Adaptador para el RecyclerView
+    private lateinit var drawerLayout: DrawerLayout // DrawerLayout para el menú lateral
+
+    // Metodo que se llama al crear la actividad
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMenuBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        binding = ActivityMenuBinding.inflate(layoutInflater) // Inflar el layout
+        setContentView(binding.root) // Establecer la vista
 
+        // Inicializar el DrawerLayout
+        drawerLayout = findViewById(R.id.drawer_layout)
+
+        // Cambiar color de la barra de estado
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.statusBarColor = getColor(R.color.supeficie)
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        }
+
+        // Ajustes para la barra de sistema
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        // Configurar el adaptador con todas las funciones
         adapter = ExerciseAdapter(
             exercises,
             onDeleteClicked = { exercise ->
-                exercises.remove(exercise)
-                adapter.notifyDataSetChanged()
+                exercises.remove(exercise) // Eliminar ejercicio de la lista
+                adapter.notifyDataSetChanged() // Notificar cambios al adaptador
             },
             onEditClicked = { exercise ->
-                showEditExerciseDialog(exercise)
+                showEditExerciseDialog(exercise) // Mostrar diálogo de edición
             },
-            onAddClicked = { 
-                showAddExerciseDialog()
+            onAddClicked = {
+                showAddExerciseDialog() // Mostrar diálogo para agregar ejercicio
             }
         )
 
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.adapter = adapter
+        // Configuración del RecyclerView
+        binding.recyclerView.layoutManager = LinearLayoutManager(this) // Establecer el layout manager
+        binding.recyclerView.adapter = adapter // Establecer el adaptador
 
+        // Configurar el click listener para el FloatingActionButton
         binding.addExerciseButton.setOnClickListener {
-            showAddExerciseDialog()
+            showAddExerciseDialog() // Mostrar diálogo para agregar ejercicio
+        }
+
+        // Configurar el click listener para el ImageButton
+        binding.imageButton.setOnClickListener {
+            toggleDrawer() // Alternar el menú lateral
+        }
+
+        // Configurar el click listener para la flecha en el menú
+        val botonFlecha = binding.root.findViewById<ImageButton>(R.id.botonFlecha)
+        botonFlecha.setOnClickListener {
+            toggleDrawer() // Cerrar el menú
+        }
+
+        // Configurar el click listener para "Cerrar Sesión"
+        val cerrarSesion = binding.root.findViewById<TextView>(R.id.cerrarSesion)
+        cerrarSesion.setOnClickListener {
+            showLogoutConfirmationDialog() // Mostrar diálogo de confirmación de cierre de sesión
+        }
+
+        // Configurar el click listener para el ejercicio específico
+        val ejercicio = binding.root.findViewById<TextView>(R.id.ejercicio2)
+        ejercicio.setOnClickListener {
+            val intent = Intent(this, EjercicioActivity::class.java) // Crear intención para iniciar EjercicioActivity
+            startActivity(intent) // Iniciar la nueva actividad
         }
     }
 
+    // Metodo para mostrar el diálogo para agregar un ejercicio
     private fun showAddExerciseDialog() {
         AddExerciseDialogFragment().show(supportFragmentManager, "AddExerciseDialog")
     }
 
+    // Metodo para mostrar el diálogo para editar un ejercicio
     private fun showEditExerciseDialog(exercise: Exercise) {
         EditExerciseDialogFragment.newInstance(exercise).show(
-            supportFragmentManager, 
+            supportFragmentManager,
             "EditExerciseDialog"
         )
+    }
+
+    // Metodo para alternar el menú lateral
+    private fun toggleDrawer() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START) // Cerrar el menú
+        } else {
+            drawerLayout.openDrawer(GravityCompat.START) // Abrir el menú
+        }
+    }
+
+    // Metodo para mostrar el diálogo de confirmación de cierre de sesión
+    private fun showLogoutConfirmationDialog() {
+        val dialog = LogoutConfirmationDialogFragment { confirmed ->
+            if (confirmed) {
+                // Limpiar SharedPreferences para terminar la sesión
+                val sharedPreferences = getSharedPreferences("SessionPrefs", Context.MODE_PRIVATE)
+                with(sharedPreferences.edit()) {
+                    remove("isLoggedIn") // Eliminar la marca de sesión iniciada
+                    apply() // Aplicar cambios
+                }
+
+                // Redirigir al login
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent) // Iniciar la actividad de inicio de sesión
+                finish() // Cerrar la actividad actual
+            }
+        }
+        dialog.show(supportFragmentManager, "LogoutConfirmationDialog") // Mostrar el diálogo
     }
 }
 ```

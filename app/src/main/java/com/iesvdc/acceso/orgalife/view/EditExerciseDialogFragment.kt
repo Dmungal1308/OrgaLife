@@ -23,7 +23,7 @@ class EditExerciseDialogFragment : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         binding = DialogEditExerciseBinding.inflate(layoutInflater)
-        
+
         // Pre-poblar los campos
         binding.editTextName.setText(exercise.name)
         binding.editTextDescription.setText(exercise.description)
@@ -34,7 +34,7 @@ class EditExerciseDialogFragment : DialogFragment() {
             .setPositiveButton("Guardar") { _, _ ->
                 val name = binding.editTextName.text.toString()
                 val description = binding.editTextDescription.text.toString()
-                
+
                 if (name.isNotEmpty() && description.isNotEmpty()) {
                     val updatedExercise = Exercise(
                         name = name,
@@ -52,12 +52,12 @@ class EditExerciseDialogFragment : DialogFragment() {
         dialog.setOnShowListener {
             // Cambiar color del fondo del diálogo
             dialog.window?.setBackgroundDrawableResource(R.color.superficieContenedorAlta)
-            
+
             // Cambiar color del título
             val titleId = resources.getIdentifier("alertTitle", "id", "android")
             val textViewTitle = dialog.findViewById<TextView>(titleId)
             textViewTitle?.setTextColor(resources.getColor(R.color.primario))
-            
+
             // Cambiar color de los botones
             dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(resources.getColor(R.color.primario))
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(resources.getColor(R.color.primario))

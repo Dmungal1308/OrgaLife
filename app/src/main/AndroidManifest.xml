@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_icono_principal"
@@ -10,6 +11,9 @@
         android:roundIcon="@mipmap/ic_icono_principal_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Orgalife">
+        <activity
+            android:name=".view.EjercicioActivity"
+            android:exported="false" />
         <activity
             android:name=".view.RegistrarActivity"
             android:exported="false" />

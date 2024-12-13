@@ -15,14 +15,14 @@ class AddExerciseDialogFragment : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         binding = DialogAddExerciseBinding.inflate(layoutInflater)
-        
+
         val dialog = AlertDialog.Builder(requireContext())
             .setTitle("Añadir Ejercicio")
             .setView(binding.root)
             .setPositiveButton("Guardar") { _, _ ->
                 val name = binding.editTextName.text.toString()
                 val description = binding.editTextDescription.text.toString()
-                
+
                 if (name.isNotEmpty() && description.isNotEmpty()) {
                     val newExercise = Exercise(name, description, R.mipmap.ic_icono_principal_foreground)
                     ExerciseRepository.addExercise(newExercise)
@@ -34,11 +34,11 @@ class AddExerciseDialogFragment : DialogFragment() {
 
         dialog.setOnShowListener {
             dialog.window?.setBackgroundDrawableResource(R.color.superficieContenedorAlta)
-            
+
             val titleId = resources.getIdentifier("alertTitle", "id", "android")
             val textViewTitle = dialog.findViewById<TextView>(titleId)
             textViewTitle?.setTextColor(resources.getColor(R.color.primario))
-            
+
             dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(resources.getColor(R.color.primario))
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(resources.getColor(R.color.primario))
         }

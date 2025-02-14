@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".view.MenuActivity">
+    tools:context=".view.AnunciosActivity">
 
     <!-- 1) DrawerLayout ocupa la parte central/arriba -->
     <androidx.drawerlayout.widget.DrawerLayout
@@ -14,15 +14,16 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        tools:context=".view.EjercicioActivity">
+        tools:context=".view.AnunciosActivity">
 
-        <!-- Tu ConstraintLayout con ImageButtons, RecyclerView, FAB... -->
+        <!-- ConstraintLayout principal -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/supeficie">
 
+            <!-- Botón hamburguesa para abrir el menú lateral -->
             <ImageButton
                 android:id="@+id/imageButton"
                 android:layout_width="50dp"
@@ -35,13 +36,14 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@mipmap/ic_barra_menu_foreground" />
 
+            <!-- Texto que dice "Anuncios" en lugar de "Menu" -->
             <TextView
                 android:id="@+id/textView4"
                 android:layout_width="131dp"
                 android:layout_height="36dp"
                 android:layout_marginTop="16dp"
                 android:gravity="center"
-                android:text="Menu"
+                android:text="Anuncios"
                 android:textColor="@color/primario"
                 android:textSize="25sp"
                 app:layout_constraintEnd_toStartOf="@+id/imageButton3"
@@ -60,34 +62,24 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@mipmap/ic_icono_principal_foreground" />
 
+            <!-- RecyclerView para los anuncios -->
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
+                android:id="@+id/recyclerViewAnuncios"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="90dp"
                 android:scrollbars="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/addExerciseButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:backgroundTint="@color/superficieContenedorMasAlta"
-                android:src="@mipmap/ic_add_foreground"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:fabCustomSize="56dp"
-                app:maxImageSize="60dp" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Menú lateral incluido, si lo estás usando -->
-        <include layout="@layout/menu_drawer" />
+        <include
+            layout="@layout/menu_drawer" />
 
     </androidx.drawerlayout.widget.DrawerLayout>
 
-    <!-- 2) Barra inferior con ImageButtons y fondo distinto -->
+    <!-- 2) Barra inferior con ImageButtons y fondo distinto (igual que en MenuActivity) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
@@ -95,41 +87,38 @@
         android:gravity="center"
         android:background="@color/superficieContenedorMasAlta">
 
-    <!-- Botón Inicio (ImageButton) -->
-    <ImageButton
-        android:id="@+id/btnInicio"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
-        android:background="@null"
-        android:src="@mipmap/ic_inicio_foreground"
-        android:padding="4dp"/>
+        <ImageButton
+            android:id="@+id/btnInicio"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:background="@null"
+            android:src="@mipmap/ic_inicio_foreground"
+            android:padding="4dp"/>
 
-    <!-- Botón Anuncios (ImageButton) -->
-    <ImageButton
-        android:id="@+id/btnAnuncios"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
-        android:background="@null"
-        android:src="@mipmap/anuncio_foreground"
-        android:padding="4dp"/>
+        <ImageButton
+            android:id="@+id/btnAnuncios"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:background="@null"
+            android:src="@mipmap/anuncio_foreground"
+            android:padding="4dp"/>
 
-    <!-- Botón Cerrar Sesión (ImageButton) -->
-    <ImageButton
-        android:id="@+id/btnCerrarSesion"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
-        android:background="@null"
-        android:src="@mipmap/cerrar_foreground"
-        android:padding="4dp"/>
-</LinearLayout>
+        <ImageButton
+            android:id="@+id/btnCerrarSesion"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:background="@null"
+            android:src="@mipmap/cerrar_foreground"
+            android:padding="4dp"/>
+    </LinearLayout>
 
 </LinearLayout>

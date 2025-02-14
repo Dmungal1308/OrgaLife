@@ -96,6 +96,17 @@ class MenuActivity : AppCompatActivity() {
             val intent = Intent(this, EjercicioActivity::class.java) // Crear intención para iniciar EjercicioActivity
             startActivity(intent) // Iniciar la nueva actividad
         }
+        val btnAnuncios = findViewById<ImageButton>(R.id.btnAnuncios)
+        btnAnuncios.setOnClickListener {
+            // Navegar a AnunciosActivity
+            startActivity(Intent(this, AnunciosActivity::class.java))
+        }
+
+        // Botón de Cerrar Sesión
+        val btnCerrarSesion = findViewById<ImageButton>(R.id.btnCerrarSesion)
+        btnCerrarSesion.setOnClickListener {
+            showLogoutConfirmationDialog()
+        }
     }
 
     // Metodo para mostrar el diálogo para agregar un ejercicio

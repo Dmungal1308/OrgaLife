@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Orgalife">
         <activity
+            android:name=".view.AnunciosActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.EjercicioActivity"
             android:exported="false" />
         <activity
@@ -33,6 +36,8 @@
         <activity
             android:name=".view.MenuActivity"
             android:exported="false" />
+
+
     </application>
 
 </manifest>

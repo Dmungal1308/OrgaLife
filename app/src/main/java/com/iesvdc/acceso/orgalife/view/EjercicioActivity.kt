@@ -21,33 +21,38 @@ import com.iesvdc.acceso.orgalife.databinding.ActivityEjercicioBinding
 import com.iesvdc.acceso.orgalife.databinding.ActivityMenuBinding
 
 class EjercicioActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityEjercicioBinding
-    private val exercises = ExerciseRepository.getExercises() // Lista de ejercicios
-    lateinit var adapter: ExerciseAdapter
     private lateinit var drawerLayout: DrawerLayout
+
+    private val exercises = ExerciseRepository.getExercises()
+    private lateinit var adapter: ExerciseAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // 1) Inflas el binding
         binding = ActivityEjercicioBinding.inflate(layoutInflater)
+        // 2) setContentView con la root del binding
         setContentView(binding.root)
 
-        // Inicializar el DrawerLayout
-        drawerLayout = findViewById(R.id.drawer_layout)
+        // 3) DrawerLayout
+        drawerLayout = binding.drawerLayout
 
-        // Cambiar color de la barra de estado (lo mantienes tal como lo tienes)
+        // Ajustes de la barra de estado
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.statusBarColor = getColor(R.color.supeficie)
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
 
         // Ajustes para la barra de sistema
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets -> // Cambia 'findViewById(R.id.main)' por 'binding.main'
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        // Configurar el adaptador con todas las funciones
+        // Configurar RecyclerView
         adapter = ExerciseAdapter(
             exercises,
             onDeleteClicked = { exercise ->
@@ -61,49 +66,57 @@ class EjercicioActivity : AppCompatActivity() {
                 showAddExerciseDialog()
             }
         )
-
-        // Configuración del RecyclerView
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
 
-        // Configurar el click listener para el FloatingActionButton
+        // FAB
         binding.addExerciseButton.setOnClickListener {
             showAddExerciseDialog()
         }
 
-        // Configurar el click listener para el ImageButton
+        // Botón hamburguesa (drawer)
         binding.imageButton.setOnClickListener {
             toggleDrawer()
         }
 
-        // Configurar el click listener para la flecha en el menú
-        val botonFlecha = binding.root.findViewById<ImageButton>(R.id.botonFlecha)
-        botonFlecha.setOnClickListener {
-            toggleDrawer() // Cerrar el menú
+        val inicio = binding.root.findViewById<TextView>(R.id.textView3)
+        inicio.setOnClickListener {
+            val intent = Intent(this, MenuActivity::class.java) // Crear intención para iniciar MenuActivity
+            startActivity(intent) // Iniciar la nueva actividad
         }
 
-        // Configurar el click listener para "Cerrar Sesión"
+        // Flecha en el menú lateral
+        val botonFlecha = binding.root.findViewById<ImageButton>(R.id.botonFlecha)
+        botonFlecha.setOnClickListener {
+            toggleDrawer()
+        }
+
+        // Cerrar sesión en el menú lateral
         val cerrarSesion = binding.root.findViewById<TextView>(R.id.cerrarSesion)
         cerrarSesion.setOnClickListener {
             showLogoutConfirmationDialog()
         }
 
-        val menu = binding.root.findViewById<TextView>(R.id.textView3)
-        menu.setOnClickListener {
-            val intent = Intent(this, MenuActivity::class.java)
-            startActivity(intent)
+        // Barra inferior:
+        val btnInicio = findViewById<ImageButton>(R.id.btnInicio)
+        val btnAnuncios = findViewById<ImageButton>(R.id.btnAnuncios)
+        val btnCerrarSesion = findViewById<ImageButton>(R.id.btnCerrarSesion)
+
+        btnInicio.setOnClickListener {
+            // Ir a MenuActivity
+            startActivity(Intent(this, MenuActivity::class.java))
         }
-    }
+        btnAnuncios.setOnClickListener {
+            // Ir a AnunciosActivity
+            startActivity(Intent(this, AnunciosActivity::class.java))
+        }
+        btnCerrarSesion.setOnClickListener {
+            showLogoutConfirmationDialog()
+        }
 
-    private fun showAddExerciseDialog() {
-        AddExerciseDialogFragment().show(supportFragmentManager, "AddExerciseDialog")
-    }
-
-    private fun showEditExerciseDialog(exercise: Exercise) {
-        EditExerciseDialogFragment.newInstance(exercise).show(
-            supportFragmentManager,
-            "EditExerciseDialog"
-        )
+        // Si tienes más elementos (ej. un TextView "menu" para volver):
+        // val menu = binding.root.findViewById<TextView>(R.id.textView3)
+        // menu.setOnClickListener { startActivity(Intent(this, MenuActivity::class.java)) }
     }
 
     private fun toggleDrawer() {
@@ -114,13 +127,21 @@ class EjercicioActivity : AppCompatActivity() {
         }
     }
 
+    private fun showAddExerciseDialog() {
+        AddExerciseDialogFragment().show(supportFragmentManager, "AddExerciseDialog")
+    }
+
+    private fun showEditExerciseDialog(exercise: Exercise) {
+        EditExerciseDialogFragment.newInstance(exercise).show(supportFragmentManager, "EditExerciseDialog")
+    }
+
     private fun showLogoutConfirmationDialog() {
         val dialog = LogoutConfirmationDialogFragment { confirmed ->
             if (confirmed) {
                 // Redirigir al login
                 val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)
-                finish() // Opcional: cerrar la actividad actual
+                finish()
             }
         }
         dialog.show(supportFragmentManager, "LogoutConfirmationDialog")

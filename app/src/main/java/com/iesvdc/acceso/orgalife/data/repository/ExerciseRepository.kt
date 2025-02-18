@@ -1,10 +1,11 @@
-package com.iesvdc.acceso.orgalife.data
+package com.iesvdc.acceso.orgalife.data.repository
 
 import com.iesvdc.acceso.orgalife.R
+import com.iesvdc.acceso.orgalife.domain.models.Exercise
 
 object ExerciseRepository {
     private val exercises = mutableListOf<Exercise>()
-    
+
     init {
         exercises.addAll(
             listOf(
@@ -36,12 +37,12 @@ object ExerciseRepository {
     fun updateExercise(oldExercise: Exercise, newExercise: Exercise) {
         val index = exercises.indexOf(oldExercise)
         if (index != -1) {
-            exercises.removeAt(index)  // Eliminar el ejercicio original
-            exercises.add(newExercise) // Añadir el nuevo al final
+            exercises.removeAt(index)
+            exercises.add(newExercise)
         }
     }
 
     fun addExercise(exercise: Exercise) {
-        exercises.add(exercise)  // Añadir directamente al final
+        exercises.add(exercise)
     }
 }

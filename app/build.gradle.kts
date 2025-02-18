@@ -55,4 +55,9 @@ dependencies {
     
     implementation("com.google.android.gms:play-services-auth:21.0.0")
     implementation("com.google.android.gms:play-services-base:18.3.0")
+    // ViewModel KTX (para viewModelScope y otras extensiones)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+
+    // Coroutines para Android
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
 }

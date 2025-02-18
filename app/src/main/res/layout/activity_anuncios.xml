@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".view.AnunciosActivity">
+    tools:context=".ui.view.AnunciosActivity">
 
     <!-- 1) DrawerLayout ocupa la parte central/arriba -->
     <androidx.drawerlayout.widget.DrawerLayout
@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        tools:context=".view.AnunciosActivity">
+        tools:context=".ui.view.AnunciosActivity">
 
         <!-- ConstraintLayout principal -->
         <androidx.constraintlayout.widget.ConstraintLayout

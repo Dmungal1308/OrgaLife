@@ -1,32 +1,47 @@
-package com.iesvdc.acceso.orgalife.view
+package com.iesvdc.acceso.orgalife.ui.view
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.ViewModelProvider
 import com.iesvdc.acceso.orgalife.R
-import com.iesvdc.acceso.orgalife.data.Exercise
-import com.iesvdc.acceso.orgalife.data.ExerciseRepository
+import com.iesvdc.acceso.orgalife.domain.models.Exercise
 import com.iesvdc.acceso.orgalife.databinding.DialogAddExerciseBinding
+import com.iesvdc.acceso.orgalife.ui.modelview.MenuViewModel
 
 class AddExerciseDialogFragment : DialogFragment() {
-    private lateinit var binding: DialogAddExerciseBinding
+
+    private var _binding: DialogAddExerciseBinding? = null
+    private val binding get() = _binding!!
+
+    private lateinit var menuViewModel: MenuViewModel
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        // Obtenemos el mismo ViewModel que la Activity
+        menuViewModel = ViewModelProvider(requireActivity()).get(MenuViewModel::class.java)
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        binding = DialogAddExerciseBinding.inflate(layoutInflater)
+        _binding = DialogAddExerciseBinding.inflate(layoutInflater)
 
         val dialog = AlertDialog.Builder(requireContext())
             .setTitle("Añadir Ejercicio")
             .setView(binding.root)
             .setPositiveButton("Guardar") { _, _ ->
-                val name = binding.editTextName.text.toString()
-                val description = binding.editTextDescription.text.toString()
+                val name = binding.editTextName.text.toString().trim()
+                val description = binding.editTextDescription.text.toString().trim()
 
                 if (name.isNotEmpty() && description.isNotEmpty()) {
-                    val newExercise = Exercise(name, description, R.mipmap.ic_icono_principal_foreground)
-                    ExerciseRepository.addExercise(newExercise)
-                    (activity as? MenuActivity)?.adapter?.notifyDataSetChanged()
+                    val newExercise = Exercise(
+                        name = name,
+                        description = description,
+                        imageResId = R.mipmap.ic_icono_principal_foreground
+                    )
+                    menuViewModel.addExercise(newExercise)
                 }
             }
             .setNegativeButton("Cancelar", null)
@@ -45,4 +60,9 @@ class AddExerciseDialogFragment : DialogFragment() {
 
         return dialog
     }
-} 
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}

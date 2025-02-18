@@ -1,16 +1,23 @@
+package com.iesvdc.acceso.orgalife.ui.view
+
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.DialogFragment
-import com.iesvdc.acceso.orgalife.R
-import com.iesvdc.acceso.orgalife.data.Exercise
-import com.iesvdc.acceso.orgalife.data.ExerciseRepository
-import com.iesvdc.acceso.orgalife.databinding.DialogEditExerciseBinding
-import com.iesvdc.acceso.orgalife.view.MenuActivity
 import android.widget.TextView
+import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.ViewModelProvider
+import com.iesvdc.acceso.orgalife.R
+import com.iesvdc.acceso.orgalife.domain.models.Exercise
+import com.iesvdc.acceso.orgalife.databinding.DialogEditExerciseBinding
+import com.iesvdc.acceso.orgalife.ui.modelview.MenuViewModel
 
 class EditExerciseDialogFragment : DialogFragment() {
-    private lateinit var binding: DialogEditExerciseBinding
+
+    private var _binding: DialogEditExerciseBinding? = null
+    private val binding get() = _binding!!
+
+    private lateinit var menuViewModel: MenuViewModel
     private lateinit var exercise: Exercise
 
     companion object {
@@ -21,10 +28,14 @@ class EditExerciseDialogFragment : DialogFragment() {
         }
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        binding = DialogEditExerciseBinding.inflate(layoutInflater)
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        menuViewModel = ViewModelProvider(requireActivity()).get(MenuViewModel::class.java)
+    }
 
-        // Pre-poblar los campos
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        _binding = DialogEditExerciseBinding.inflate(layoutInflater)
+
         binding.editTextName.setText(exercise.name)
         binding.editTextDescription.setText(exercise.description)
 
@@ -32,37 +43,37 @@ class EditExerciseDialogFragment : DialogFragment() {
             .setTitle("Editar Ejercicio")
             .setView(binding.root)
             .setPositiveButton("Guardar") { _, _ ->
-                val name = binding.editTextName.text.toString()
-                val description = binding.editTextDescription.text.toString()
+                val name = binding.editTextName.text.toString().trim()
+                val description = binding.editTextDescription.text.toString().trim()
 
                 if (name.isNotEmpty() && description.isNotEmpty()) {
                     val updatedExercise = Exercise(
                         name = name,
                         description = description,
-                        imageResId = R.mipmap.ic_icono_principal_foreground
+                        imageResId = exercise.imageResId
                     )
-                    ExerciseRepository.updateExercise(exercise, updatedExercise)
-                    (activity as? MenuActivity)?.adapter?.notifyDataSetChanged()
+                    menuViewModel.updateExercise(exercise, updatedExercise)
                 }
             }
             .setNegativeButton("Cancelar", null)
             .create()
 
-        // Cambiar colores y fondo después de crear el dialog
         dialog.setOnShowListener {
-            // Cambiar color del fondo del diálogo
             dialog.window?.setBackgroundDrawableResource(R.color.superficieContenedorAlta)
 
-            // Cambiar color del título
             val titleId = resources.getIdentifier("alertTitle", "id", "android")
             val textViewTitle = dialog.findViewById<TextView>(titleId)
             textViewTitle?.setTextColor(resources.getColor(R.color.primario))
 
-            // Cambiar color de los botones
             dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(resources.getColor(R.color.primario))
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(resources.getColor(R.color.primario))
         }
 
         return dialog
     }
-} 
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}

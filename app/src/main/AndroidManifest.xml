@@ -12,19 +12,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Orgalife">
         <activity
-            android:name=".view.AnunciosActivity"
+            android:name=".ui.view.AnunciosActivity"
             android:exported="false" />
         <activity
-            android:name=".view.EjercicioActivity"
+            android:name=".ui.view.EjercicioActivity"
             android:exported="false" />
         <activity
-            android:name=".view.RegistrarActivity"
+            android:name=".ui.view.RegistrarActivity"
             android:exported="false" />
         <activity
-            android:name=".view.LoginActivity"
+            android:name=".ui.view.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".view.PantallaCargaActivity"
+            android:name=".ui.view.PantallaCargaActivity"
             android:exported="true"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -34,7 +34,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.MenuActivity"
+            android:name=".ui.view.MenuActivity"
             android:exported="false" />
 
 

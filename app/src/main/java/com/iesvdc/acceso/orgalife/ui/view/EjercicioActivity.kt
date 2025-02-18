@@ -1,4 +1,4 @@
-package com.iesvdc.acceso.orgalife.view
+package com.iesvdc.acceso.orgalife.ui.view
 
 import android.content.Intent
 import android.os.Build
@@ -6,58 +6,55 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.iesvdc.acceso.orgalife.R
-import com.iesvdc.acceso.orgalife.adapter.ExerciseAdapter
-import com.iesvdc.acceso.orgalife.data.Exercise
-import com.iesvdc.acceso.orgalife.data.ExerciseRepository
+import com.iesvdc.acceso.orgalife.ui.adapter.ExerciseAdapter
+import com.iesvdc.acceso.orgalife.domain.models.Exercise
 import com.iesvdc.acceso.orgalife.databinding.ActivityEjercicioBinding
-import com.iesvdc.acceso.orgalife.databinding.ActivityMenuBinding
+import com.iesvdc.acceso.orgalife.ui.modelview.EjercicioViewModel
 
 class EjercicioActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEjercicioBinding
     private lateinit var drawerLayout: DrawerLayout
 
-    private val exercises = ExerciseRepository.getExercises()
+    // Obtenemos el EjercicioViewModel con el delegate 'by viewModels()'
+    private val ejercicioViewModel: EjercicioViewModel by viewModels()
+
+    // Instancia del Adapter (sin pasar la lista al constructor)
     private lateinit var adapter: ExerciseAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // 1) Inflas el binding
         binding = ActivityEjercicioBinding.inflate(layoutInflater)
-        // 2) setContentView con la root del binding
         setContentView(binding.root)
 
-        // 3) DrawerLayout
         drawerLayout = binding.drawerLayout
 
-        // Ajustes de la barra de estado
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.statusBarColor = getColor(R.color.supeficie)
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
 
         // Ajustes para la barra de sistema
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        // Configurar RecyclerView
+        // Creamos el adapter con lambdas que llaman al ViewModel
         adapter = ExerciseAdapter(
-            exercises,
             onDeleteClicked = { exercise ->
-                exercises.remove(exercise)
-                adapter.notifyDataSetChanged()
+                // En vez de manipular la lista local, avisamos al ViewModel
+                ejercicioViewModel.deleteExercise(exercise)
             },
             onEditClicked = { exercise ->
                 showEditExerciseDialog(exercise)
@@ -66,57 +63,59 @@ class EjercicioActivity : AppCompatActivity() {
                 showAddExerciseDialog()
             }
         )
+
+        // Configuramos el RecyclerView
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
 
-        // FAB
+        // Observamos el LiveData del ViewModel
+        // y cada vez que cambie la lista, refrescamos el Adapter
+        ejercicioViewModel.exercises.observe(this, Observer { updatedExercises ->
+            adapter.setExercises(updatedExercises)
+        })
+
+        // FAB para agregar un ejercicio
         binding.addExerciseButton.setOnClickListener {
             showAddExerciseDialog()
         }
 
-        // Botón hamburguesa (drawer)
+        // Botón hamburguesa
         binding.imageButton.setOnClickListener {
             toggleDrawer()
         }
 
+        // "Inicio" en el menú lateral → vuelve a MenuActivity
         val inicio = binding.root.findViewById<TextView>(R.id.textView3)
         inicio.setOnClickListener {
-            val intent = Intent(this, MenuActivity::class.java) // Crear intención para iniciar MenuActivity
-            startActivity(intent) // Iniciar la nueva actividad
+            startActivity(Intent(this, MenuActivity::class.java))
         }
 
-        // Flecha en el menú lateral
+        // Flecha del drawer
         val botonFlecha = binding.root.findViewById<ImageButton>(R.id.botonFlecha)
         botonFlecha.setOnClickListener {
             toggleDrawer()
         }
 
-        // Cerrar sesión en el menú lateral
+        // Cerrar sesión del drawer
         val cerrarSesion = binding.root.findViewById<TextView>(R.id.cerrarSesion)
         cerrarSesion.setOnClickListener {
             showLogoutConfirmationDialog()
         }
 
-        // Barra inferior:
+        // Barra inferior
         val btnInicio = findViewById<ImageButton>(R.id.btnInicio)
         val btnAnuncios = findViewById<ImageButton>(R.id.btnAnuncios)
         val btnCerrarSesion = findViewById<ImageButton>(R.id.btnCerrarSesion)
 
         btnInicio.setOnClickListener {
-            // Ir a MenuActivity
             startActivity(Intent(this, MenuActivity::class.java))
         }
         btnAnuncios.setOnClickListener {
-            // Ir a AnunciosActivity
             startActivity(Intent(this, AnunciosActivity::class.java))
         }
         btnCerrarSesion.setOnClickListener {
             showLogoutConfirmationDialog()
         }
-
-        // Si tienes más elementos (ej. un TextView "menu" para volver):
-        // val menu = binding.root.findViewById<TextView>(R.id.textView3)
-        // menu.setOnClickListener { startActivity(Intent(this, MenuActivity::class.java)) }
     }
 
     private fun toggleDrawer() {
@@ -132,18 +131,14 @@ class EjercicioActivity : AppCompatActivity() {
     }
 
     private fun showEditExerciseDialog(exercise: Exercise) {
-        EditExerciseDialogFragment.newInstance(exercise).show(supportFragmentManager, "EditExerciseDialog")
+        EditExerciseDialogFragment.newInstance(exercise)
+            .show(supportFragmentManager, "EditExerciseDialog")
     }
 
     private fun showLogoutConfirmationDialog() {
-        val dialog = LogoutConfirmationDialogFragment { confirmed ->
-            if (confirmed) {
-                // Redirigir al login
-                val intent = Intent(this, LoginActivity::class.java)
-                startActivity(intent)
-                finish()
-            }
-        }
-        dialog.show(supportFragmentManager, "LogoutConfirmationDialog")
+        // Si quieres, podrías tener un logoutEvent en EjercicioViewModel
+        // y un LogoutConfirmationDialogFragment que llame a ejercicioViewModel.logout().
+        // O puedes mantenerlo simple y hacerlo igual que en MenuActivity.
+        LogoutConfirmationDialogFragment().show(supportFragmentManager, "LogoutConfirmationDialog")
     }
 }

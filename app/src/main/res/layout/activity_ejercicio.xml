@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".view.EjercicioActivity">
+    tools:context=".ui.view.EjercicioActivity">
 
     <!-- 1) DrawerLayout arriba, con weight=1 -->
     <androidx.drawerlayout.widget.DrawerLayout
@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        tools:context=".view.EjercicioActivity">
+        tools:context=".ui.view.EjercicioActivity">
 
         <!-- ConstraintLayout con tu calendario, RecyclerView, FAB... -->
         <androidx.constraintlayout.widget.ConstraintLayout

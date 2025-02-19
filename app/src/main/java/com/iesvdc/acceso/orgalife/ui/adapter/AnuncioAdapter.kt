@@ -14,7 +14,7 @@ class AnuncioAdapter(private var anuncios: List<Anuncio>) :
     // Metodo para refrescar la lista de anuncios desde la Activity/Fragment
     fun setAnuncios(newList: List<Anuncio>) {
         anuncios = newList
-        notifyDataSetChanged()  // En un proyecto real, usar DiffUtil
+        notifyDataSetChanged()
     }
 
     class AnuncioViewHolder(view: View) : RecyclerView.ViewHolder(view) {

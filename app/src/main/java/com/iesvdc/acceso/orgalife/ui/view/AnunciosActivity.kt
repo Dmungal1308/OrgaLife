@@ -18,14 +18,16 @@ import com.iesvdc.acceso.orgalife.R
 import com.iesvdc.acceso.orgalife.ui.adapter.AnuncioAdapter
 import com.iesvdc.acceso.orgalife.databinding.ActivityAnunciosBinding
 import com.iesvdc.acceso.orgalife.ui.modelview.AnunciosViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AnunciosActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAnunciosBinding
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var adapter: AnuncioAdapter
 
-    // Obtenemos el ViewModel de anuncios
+    // Inyectamos el ViewModel con Hilt
     private val anunciosViewModel: AnunciosViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,56 +68,51 @@ class AnunciosActivity : AppCompatActivity() {
         }
 
         // Enlace a EjercicioActivity
-        val ejercicio = binding.root.findViewById<TextView>(R.id.ejercicio2)
-        ejercicio.setOnClickListener {
-            startActivity(Intent(this, EjercicioActivity::class.java))
+        binding.root.findViewById<TextView>(R.id.ejercicio2).setOnClickListener {
+            startActivity(Intent(this, com.iesvdc.acceso.orgalife.ui.view.EjercicioActivity::class.java))
         }
 
         // Enlace a MenuActivity
-        val inicio = binding.root.findViewById<TextView>(R.id.textView3)
-        inicio.setOnClickListener {
-            startActivity(Intent(this, MenuActivity::class.java))
+        binding.root.findViewById<TextView>(R.id.textView3).setOnClickListener {
+            startActivity(Intent(this, com.iesvdc.acceso.orgalife.ui.view.MenuActivity::class.java))
         }
 
         // Flecha en menú lateral
-        val botonFlecha = binding.root.findViewById<ImageButton>(R.id.botonFlecha)
-        botonFlecha.setOnClickListener {
+        binding.root.findViewById<ImageButton>(R.id.botonFlecha).setOnClickListener {
             toggleDrawer()
         }
 
-        // Cerrar Sesión
-        val cerrarSesion = binding.root.findViewById<TextView>(R.id.cerrarSesion)
-        cerrarSesion.setOnClickListener {
+        // Cerrar sesión
+        binding.root.findViewById<TextView>(R.id.cerrarSesion).setOnClickListener {
             showLogoutConfirmationDialog()
         }
 
-        // Barra inferior
-        val btnAnuncios = findViewById<ImageButton>(R.id.btnAnuncios)
-        btnAnuncios.setOnClickListener {
-            // Si quisieras recargar anuncios, o quedarte en esta pantalla
+        // Barra inferior (puedes personalizar estas acciones según necesites)
+        findViewById<ImageButton>(R.id.btnInicio).setOnClickListener {
+            startActivity(Intent(this, com.iesvdc.acceso.orgalife.ui.view.MenuActivity::class.java))
         }
-        val btnInicio = findViewById<ImageButton>(R.id.btnInicio)
-        btnInicio.setOnClickListener {
-            startActivity(Intent(this, MenuActivity::class.java))
+        findViewById<ImageButton>(R.id.btnAnuncios).setOnClickListener {
+            // Por ejemplo, recargar anuncios o permanecer en esta Activity.
         }
-        val btnCerrarSesion = findViewById<ImageButton>(R.id.btnCerrarSesion)
-        btnCerrarSesion.setOnClickListener {
+        findViewById<ImageButton>(R.id.btnCerrarSesion).setOnClickListener {
             showLogoutConfirmationDialog()
         }
     }
 
     private fun toggleDrawer() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START))
             drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
+        else
             drawerLayout.openDrawer(GravityCompat.START)
-        }
     }
 
     private fun showLogoutConfirmationDialog() {
-        // En un enfoque "full MVVM",
-        // aquí podrías llamar a un metodo del ViewModel, o
-        // usar un LogoutConfirmationDialog que llame a logoutEvent.
-        LogoutConfirmationDialogFragment().show(supportFragmentManager, "LogoutConfirmationDialog")
+        val dialog = LogoutConfirmationDialogFragment()
+        dialog.onLogoutConfirmed = {
+            // Aquí navegas al LoginActivity y cierras la Activity actual
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        }
+        dialog.show(supportFragmentManager, "LogoutConfirmationDialog")
     }
 }

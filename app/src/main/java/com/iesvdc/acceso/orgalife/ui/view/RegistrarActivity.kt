@@ -10,7 +10,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.iesvdc.acceso.orgalife.R
 import com.iesvdc.acceso.orgalife.ui.modelview.RegistrarViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class RegistrarActivity : AppCompatActivity() {
 
     private lateinit var editTextUsuario: EditText
@@ -20,7 +22,7 @@ class RegistrarActivity : AppCompatActivity() {
     private lateinit var editTextRepeatPassword: EditText
     private lateinit var buttonRegistrar: Button
 
-    // Obtenemos el ViewModel con un delegado
+    // Inyectamos el ViewModel con Hilt
     private val registrarViewModel: RegistrarViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,7 +33,6 @@ class RegistrarActivity : AppCompatActivity() {
         setupObservers()
 
         buttonRegistrar.setOnClickListener {
-            // Llamamos al ViewModel y pasamos los valores
             registrarViewModel.registerUser(
                 usuario = editTextUsuario.text.toString(),
                 nombreCompleto = editTextNombreApellidos.text.toString(),
@@ -52,27 +53,21 @@ class RegistrarActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        // Observamos si el registro se completa con éxito
         registrarViewModel.registrationSuccess.observe(this, Observer { success ->
             if (success == true) {
-                // Mostrar Toast / Navegar a Login
                 showToast("Registro exitoso. Se envió correo de verificación.")
                 startActivity(Intent(this, LoginActivity::class.java))
                 finish()
             }
         })
 
-        // Observamos los errores que puedan surgir
         registrarViewModel.registrationError.observe(this, Observer { error ->
-            error?.let {
-                showToast(it)
-            }
+            error?.let { showToast(it) }
         })
 
-        // Observamos estado de carga
         registrarViewModel.isLoading.observe(this, Observer { loading ->
             buttonRegistrar.isEnabled = !loading
-            // Podrías mostrar un ProgressBar, etc.
+            // Aquí podrías mostrar un ProgressBar, etc.
         })
     }
 

@@ -2,37 +2,39 @@ package com.iesvdc.acceso.orgalife.ui.view
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.Context
 import android.os.Bundle
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.ViewModelProvider
 import com.iesvdc.acceso.orgalife.R
-import com.iesvdc.acceso.orgalife.ui.modelview.MenuViewModel
+import com.iesvdc.acceso.orgalife.domain.usercase.LogoutUseCase
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class LogoutConfirmationDialogFragment : DialogFragment() {
 
-    private lateinit var menuViewModel: MenuViewModel
+    // Inyectamos el caso de uso de logout
+    @Inject
+    lateinit var logoutUseCase: LogoutUseCase
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        // Obtenemos el mismo ViewModel que la Activity
-        menuViewModel = ViewModelProvider(requireActivity()).get(MenuViewModel::class.java)
-    }
+    // Callback opcional para notificar a la Activity que se realizó el logout
+    var onLogoutConfirmed: (() -> Unit)? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(requireContext())
             .setTitle("Cerrar Sesión")
             .setMessage("¿Estás seguro de que deseas cerrar sesión?")
             .setPositiveButton("Sí") { _, _ ->
-                // Mandamos la orden de logout al ViewModel
-                menuViewModel.logout()
+                // Ejecuta el logout usando el caso de uso inyectado
+                logoutUseCase()
+                // Notifica a la Activity (si se configuró el callback)
+                onLogoutConfirmed?.invoke()
             }
             .setNegativeButton("No", null)
 
         val dialog = builder.create()
 
-        // Personalizar colores
+        // Personalización de estilos
         dialog.setOnShowListener {
             dialog.window?.setBackgroundDrawableResource(R.color.superficieContenedorAlta)
 
@@ -40,8 +42,10 @@ class LogoutConfirmationDialogFragment : DialogFragment() {
             val textViewTitle = dialog.findViewById<TextView>(titleId)
             textViewTitle?.setTextColor(resources.getColor(R.color.primario))
 
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(resources.getColor(R.color.error))
-            dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(resources.getColor(R.color.primario))
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                ?.setTextColor(resources.getColor(R.color.error))
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+                ?.setTextColor(resources.getColor(R.color.primario))
         }
 
         return dialog

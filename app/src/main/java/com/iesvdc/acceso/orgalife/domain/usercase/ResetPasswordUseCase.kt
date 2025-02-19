@@ -4,6 +4,7 @@ import android.util.Patterns
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
 sealed class ResetPasswordResult {
     object Success : ResetPasswordResult()
@@ -11,10 +12,11 @@ sealed class ResetPasswordResult {
 }
 
 /**
- * Caso de uso para reestablecer la contraseña via Firebase.
+ * Caso de uso para restablecer la contraseña vía Firebase.
  */
-class ResetPasswordUseCase(private val firebaseAuth: FirebaseAuth) {
-
+class ResetPasswordUseCase @Inject constructor(
+    private val firebaseAuth: FirebaseAuth
+) {
     suspend operator fun invoke(email: String): ResetPasswordResult {
         if (email.isEmpty()) {
             return ResetPasswordResult.Error("Por favor, ingresa tu correo electrónico.")
@@ -22,7 +24,6 @@ class ResetPasswordUseCase(private val firebaseAuth: FirebaseAuth) {
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             return ResetPasswordResult.Error("Por favor, ingresa un correo válido.")
         }
-
         return try {
             firebaseAuth.sendPasswordResetEmail(email).await()
             ResetPasswordResult.Success

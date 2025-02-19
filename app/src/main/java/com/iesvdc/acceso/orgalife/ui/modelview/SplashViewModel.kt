@@ -6,21 +6,23 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.iesvdc.acceso.orgalife.domain.usercase.WaitForSplashUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SplashViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class SplashViewModel @Inject constructor(
+    application: Application,
+    private val waitForSplashUseCase: WaitForSplashUseCase
+) : AndroidViewModel(application) {
 
-    private val waitForSplashUseCase = WaitForSplashUseCase()
-
-    // LiveData que indica cuándo navegar
     private val _navigateToLoginEvent = MutableLiveData<Boolean>()
     val navigateToLoginEvent: LiveData<Boolean> get() = _navigateToLoginEvent
 
     init {
         viewModelScope.launch {
-            // Invoca el caso de uso para esperar el tiempo deseado
-            val result = waitForSplashUseCase() // Por defecto, espera 1000 ms
-            _navigateToLoginEvent.value = result
+            // Invoca el caso de uso; por defecto espera 1000 ms y retorna true.
+            _navigateToLoginEvent.value = waitForSplashUseCase()
         }
     }
 }

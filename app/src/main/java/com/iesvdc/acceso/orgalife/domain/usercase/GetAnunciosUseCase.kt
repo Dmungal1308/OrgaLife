@@ -1,17 +1,10 @@
 package com.iesvdc.acceso.orgalife.domain.usercase
 
 import com.iesvdc.acceso.orgalife.domain.models.Anuncio
+import javax.inject.Inject
 
-/**
- * Caso de uso para obtener la lista de anuncios.
- * (Aquí podrías tener lógica extra, como filtrar anuncios,
- *  llamar a un repositorio remoto, etc.)
- */
-class GetAnunciosUseCase {
-
+class GetAnunciosUseCase @Inject constructor() {
     operator fun invoke(): List<Anuncio> {
-        // Hard-coded por simplicidad.
-        // En un proyecto real, llamas a un repositorio, API, etc.
         return listOf(
             Anuncio("Oferta especial en productos ecológicos"),
             Anuncio("Nuevo evento de bienestar el próximo sábado"),

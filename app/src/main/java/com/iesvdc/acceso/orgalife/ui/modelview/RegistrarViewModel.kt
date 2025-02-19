@@ -5,29 +5,24 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.iesvdc.acceso.orgalife.domain.models.UserData
 import com.iesvdc.acceso.orgalife.domain.usercase.RegisterUserUseCase
 import com.iesvdc.acceso.orgalife.domain.usercase.RegistrationResult
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RegistrarViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class RegistrarViewModel @Inject constructor(
+    application: Application,
+    private val registerUserUseCase: RegisterUserUseCase
+) : AndroidViewModel(application) {
 
-    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
-
-    // Instanciamos el Use Case. En un proyecto real, esto se inyectaría.
-    private val registerUserUseCase = RegisterUserUseCase(firebaseAuth, firestore)
-
-    // LiveData para manejar éxito y error en el registro
     private val _registrationSuccess = MutableLiveData<Boolean>()
     val registrationSuccess: LiveData<Boolean> get() = _registrationSuccess
 
     private val _registrationError = MutableLiveData<String?>()
     val registrationError: LiveData<String?> get() = _registrationError
 
-    // LiveData para controlar el estado de carga
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> get() = _isLoading
 

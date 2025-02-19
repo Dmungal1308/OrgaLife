@@ -2,8 +2,11 @@ package com.iesvdc.acceso.orgalife.data.repository
 
 import com.iesvdc.acceso.orgalife.R
 import com.iesvdc.acceso.orgalife.domain.models.Exercise
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object ExerciseRepository {
+@Singleton
+class ExerciseRepository @Inject constructor() {
     private val exercises = mutableListOf<Exercise>()
 
     init {
@@ -37,8 +40,7 @@ object ExerciseRepository {
     fun updateExercise(oldExercise: Exercise, newExercise: Exercise) {
         val index = exercises.indexOf(oldExercise)
         if (index != -1) {
-            exercises.removeAt(index)
-            exercises.add(newExercise)
+            exercises[index] = newExercise
         }
     }
 

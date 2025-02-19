@@ -19,16 +19,18 @@ import com.iesvdc.acceso.orgalife.ui.adapter.ExerciseAdapter
 import com.iesvdc.acceso.orgalife.domain.models.Exercise
 import com.iesvdc.acceso.orgalife.databinding.ActivityEjercicioBinding
 import com.iesvdc.acceso.orgalife.ui.modelview.EjercicioViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class EjercicioActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEjercicioBinding
     private lateinit var drawerLayout: DrawerLayout
 
-    // Obtenemos el EjercicioViewModel con el delegate 'by viewModels()'
+    // Inyectamos el ViewModel con Hilt
     private val ejercicioViewModel: EjercicioViewModel by viewModels()
 
-    // Instancia del Adapter (sin pasar la lista al constructor)
+    // Adapter que se configurará con las acciones delegadas al ViewModel
     private lateinit var adapter: ExerciseAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,17 +45,17 @@ class EjercicioActivity : AppCompatActivity() {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
 
-        // Ajustes para la barra de sistema
+        // Configurar los insets para la barra de sistema
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        // Creamos el adapter con lambdas que llaman al ViewModel
+        // Configurar RecyclerView y Adapter
         adapter = ExerciseAdapter(
             onDeleteClicked = { exercise ->
-                // En vez de manipular la lista local, avisamos al ViewModel
+                // Delegamos al ViewModel
                 ejercicioViewModel.deleteExercise(exercise)
             },
             onEditClicked = { exercise ->
@@ -63,67 +65,36 @@ class EjercicioActivity : AppCompatActivity() {
                 showAddExerciseDialog()
             }
         )
-
-        // Configuramos el RecyclerView
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
 
-        // Observamos el LiveData del ViewModel
-        // y cada vez que cambie la lista, refrescamos el Adapter
+        // Observamos el LiveData del ViewModel para actualizar el Adapter
         ejercicioViewModel.exercises.observe(this, Observer { updatedExercises ->
             adapter.setExercises(updatedExercises)
         })
 
-        // FAB para agregar un ejercicio
-        binding.addExerciseButton.setOnClickListener {
-            showAddExerciseDialog()
-        }
-
-        // Botón hamburguesa
-        binding.imageButton.setOnClickListener {
-            toggleDrawer()
-        }
-
-        // "Inicio" en el menú lateral → vuelve a MenuActivity
-        val inicio = binding.root.findViewById<TextView>(R.id.textView3)
-        inicio.setOnClickListener {
+        // Configuramos listeners para botones y otros elementos de la UI
+        binding.addExerciseButton.setOnClickListener { showAddExerciseDialog() }
+        binding.imageButton.setOnClickListener { toggleDrawer() }
+        binding.root.findViewById<ImageButton>(R.id.botonFlecha).setOnClickListener { toggleDrawer() }
+        binding.root.findViewById<TextView>(R.id.cerrarSesion).setOnClickListener { showLogoutConfirmationDialog() }
+        binding.root.findViewById<TextView>(R.id.textView3).setOnClickListener {
             startActivity(Intent(this, MenuActivity::class.java))
         }
-
-        // Flecha del drawer
-        val botonFlecha = binding.root.findViewById<ImageButton>(R.id.botonFlecha)
-        botonFlecha.setOnClickListener {
-            toggleDrawer()
-        }
-
-        // Cerrar sesión del drawer
-        val cerrarSesion = binding.root.findViewById<TextView>(R.id.cerrarSesion)
-        cerrarSesion.setOnClickListener {
-            showLogoutConfirmationDialog()
-        }
-
-        // Barra inferior
-        val btnInicio = findViewById<ImageButton>(R.id.btnInicio)
-        val btnAnuncios = findViewById<ImageButton>(R.id.btnAnuncios)
-        val btnCerrarSesion = findViewById<ImageButton>(R.id.btnCerrarSesion)
-
-        btnInicio.setOnClickListener {
+        findViewById<ImageButton>(R.id.btnInicio).setOnClickListener {
             startActivity(Intent(this, MenuActivity::class.java))
         }
-        btnAnuncios.setOnClickListener {
+        findViewById<ImageButton>(R.id.btnAnuncios).setOnClickListener {
             startActivity(Intent(this, AnunciosActivity::class.java))
         }
-        btnCerrarSesion.setOnClickListener {
-            showLogoutConfirmationDialog()
-        }
+        findViewById<ImageButton>(R.id.btnCerrarSesion).setOnClickListener { showLogoutConfirmationDialog() }
     }
 
     private fun toggleDrawer() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START))
             drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
+        else
             drawerLayout.openDrawer(GravityCompat.START)
-        }
     }
 
     private fun showAddExerciseDialog() {
@@ -136,9 +107,12 @@ class EjercicioActivity : AppCompatActivity() {
     }
 
     private fun showLogoutConfirmationDialog() {
-        // Si quieres, podrías tener un logoutEvent en EjercicioViewModel
-        // y un LogoutConfirmationDialogFragment que llame a ejercicioViewModel.logout().
-        // O puedes mantenerlo simple y hacerlo igual que en MenuActivity.
-        LogoutConfirmationDialogFragment().show(supportFragmentManager, "LogoutConfirmationDialog")
+        val dialog = LogoutConfirmationDialogFragment()
+        dialog.onLogoutConfirmed = {
+            // Aquí navegas al LoginActivity y cierras la Activity actual
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        }
+        dialog.show(supportFragmentManager, "LogoutConfirmationDialog")
     }
 }

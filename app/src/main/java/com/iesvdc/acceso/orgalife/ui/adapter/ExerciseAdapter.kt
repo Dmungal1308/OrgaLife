@@ -18,7 +18,6 @@ class ExerciseAdapter(
         exercises.clear()
         exercises.addAll(newList)
         notifyDataSetChanged()
-        // *En un proyecto real, usarías DiffUtil para más eficiencia
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

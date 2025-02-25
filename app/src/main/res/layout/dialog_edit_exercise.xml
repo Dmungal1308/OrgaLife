@@ -20,5 +20,35 @@
         android:hint="Descripción"
         android:inputType="textMultiLine"
         android:minLines="2" />
+    <!-- ImageView para mostrar la imagen seleccionada o tomada -->
+    <ImageView
+        android:id="@+id/imageViewExercise"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/app_name"
+        android:scaleType="centerCrop" />
 
-</LinearLayout> 
+    <!-- Botón para tomar foto con la cámara -->
+
+    <!-- Botón para seleccionar imagen de la galería -->
+    <Button
+        android:id="@+id/buttonTakePhoto"
+        android:layout_width="151dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/primarioInversa"
+        android:text="Tomar foto"
+        android:textColor="@color/black"
+        android:layout_gravity="center"/>
+
+    <Button
+        android:id="@+id/buttonSelectFromGallery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/primarioInversa"
+        android:text="Seleccionar de galería"
+        android:textColor="@color/black"
+        android:layout_gravity="center"/>
+
+</LinearLayout>

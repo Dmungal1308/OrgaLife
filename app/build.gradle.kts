@@ -67,6 +67,8 @@ dependencies {
     // Hilt Android
     implementation("com.google.dagger:hilt-android:2.50")
     kapt("com.google.dagger:hilt-compiler:2.50")
+    implementation("com.github.bumptech.glide:glide:4.14.2")
+    kapt("com.github.bumptech.glide:compiler:4.14.2")
 }
 kapt {
     correctErrorTypes = true

@@ -39,7 +39,7 @@ class AddExerciseDialogFragment : DialogFragment() {
                     val newExercise = Exercise(
                         name = name,
                         description = description,
-                        imageResId = R.mipmap.ic_icono_principal_foreground
+                        imageBase64 = null
                     )
                     menuViewModel.addExercise(newExercise)
                 }

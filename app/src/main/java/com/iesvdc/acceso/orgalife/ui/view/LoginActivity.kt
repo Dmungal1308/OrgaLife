@@ -78,10 +78,7 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this, RegistrarActivity::class.java))
         }
 
-        textViewForgotPassword.setOnClickListener {
-            val email = editTextUsuario.text.toString().trim()
-            loginViewModel.resetPassword(email)
-        }
+
     }
 
     private fun setupObservers() {
@@ -93,11 +90,7 @@ class LoginActivity : AppCompatActivity() {
             }
         })
 
-        loginViewModel.emailNotVerified.observe(this, Observer { notVerified ->
-            if (notVerified == true) {
-                showToast("Por favor, verifica tu correo electrónico. Se ha reenviado el mail.")
-            }
-        })
+
 
         loginViewModel.loginErrorMessage.observe(this, Observer { message ->
             if (!message.isNullOrEmpty()) {

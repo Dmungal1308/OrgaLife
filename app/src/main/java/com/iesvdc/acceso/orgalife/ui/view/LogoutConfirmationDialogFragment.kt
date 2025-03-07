@@ -17,7 +17,7 @@ class LogoutConfirmationDialogFragment : DialogFragment() {
     @Inject
     lateinit var logoutUseCase: LogoutUseCase
 
-    // Callback opcional para notificar a la Activity que se realizó el logout
+    // Callback para notificar a la Activity que se realizó el logout y se debe redirigir a LoginActivity.
     var onLogoutConfirmed: (() -> Unit)? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -25,9 +25,9 @@ class LogoutConfirmationDialogFragment : DialogFragment() {
             .setTitle("Cerrar Sesión")
             .setMessage("¿Estás seguro de que deseas cerrar sesión?")
             .setPositiveButton("Sí") { _, _ ->
-                // Ejecuta el logout usando el caso de uso inyectado
+                // Ejecuta el logout borrando el token en SharedPreferences
                 logoutUseCase()
-                // Notifica a la Activity (si se configuró el callback)
+                // Notifica a la Activity para que, por ejemplo, navegue a LoginActivity y limpie el estado en memoria.
                 onLogoutConfirmed?.invoke()
             }
             .setNegativeButton("No", null)

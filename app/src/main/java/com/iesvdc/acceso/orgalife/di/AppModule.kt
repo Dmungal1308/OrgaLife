@@ -1,6 +1,7 @@
 package com.iesvdc.acceso.orgalife.di
 
 import android.content.Context
+import com.iesvdc.acceso.orgalife.data.datasource.network.ExerciseApi
 import com.iesvdc.acceso.orgalife.data.repository.ExerciseRepository
 import com.iesvdc.acceso.orgalife.domain.usercase.AddExerciseUseCase
 import com.iesvdc.acceso.orgalife.domain.usercase.DeleteExerciseUseCase
@@ -19,10 +20,10 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    // Si tu ExerciseRepository es un objeto (singleton), podrías proveerlo de esta forma:
     @Provides
     @Singleton
-    fun provideExerciseRepository(): ExerciseRepository = ExerciseRepository()
+    fun provideExerciseRepository(exerciseApi: ExerciseApi): ExerciseRepository = ExerciseRepository(exerciseApi)
+
 
     @Provides
     fun provideGetExercisesUseCase(repository: ExerciseRepository): GetExercisesUseCase =
@@ -47,4 +48,6 @@ object AppModule {
     @Provides
     @Singleton
     fun provideGetAnunciosUseCase(): GetAnunciosUseCase = GetAnunciosUseCase()
+
+
 }

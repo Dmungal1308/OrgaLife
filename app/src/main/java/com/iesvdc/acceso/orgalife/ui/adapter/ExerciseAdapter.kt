@@ -5,18 +5,18 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.iesvdc.acceso.orgalife.R
-import com.iesvdc.acceso.orgalife.domain.models.Exercise
+import com.iesvdc.acceso.orgalife.data.datasource.network.models.ExerciseResponse
 import com.iesvdc.acceso.orgalife.databinding.ItemExerciseBinding
 
 class ExerciseAdapter(
-    private val onDeleteClicked: (Exercise) -> Unit,
-    private val onEditClicked: (Exercise) -> Unit,
+    private val onDeleteClicked: (ExerciseResponse) -> Unit,
+    private val onEditClicked: (ExerciseResponse) -> Unit,
     private val onAddClicked: () -> Unit
 ) : RecyclerView.Adapter<ExerciseAdapter.ViewHolder>() {
 
-    private val exercises = mutableListOf<Exercise>()
+    private val exercises = mutableListOf<ExerciseResponse>()
 
-    fun setExercises(newList: List<Exercise>) {
+    fun setExercises(newList: List<ExerciseResponse>) {
         exercises.clear()
         exercises.addAll(newList)
         notifyDataSetChanged()
@@ -35,7 +35,7 @@ class ExerciseAdapter(
 
     inner class ViewHolder(private val binding: ItemExerciseBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(exercise: Exercise) {
+        fun bind(exercise: ExerciseResponse) {
             binding.textExerciseName.text = exercise.name
             binding.textExerciseDescription.text = exercise.description
 

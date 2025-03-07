@@ -23,9 +23,6 @@ class RegistrarViewModel @Inject constructor(
     private val _registrationError = MutableLiveData<String?>()
     val registrationError: LiveData<String?> get() = _registrationError
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> get() = _isLoading
-
     fun registerUser(
         usuario: String,
         nombreCompleto: String,
@@ -33,10 +30,8 @@ class RegistrarViewModel @Inject constructor(
         password: String,
         repeatPassword: String
     ) {
-        _isLoading.value = true
         viewModelScope.launch {
             val result = registerUserUseCase(usuario, nombreCompleto, correo, password, repeatPassword)
-            _isLoading.value = false
             when (result) {
                 is RegistrationResult.Success -> {
                     _registrationSuccess.value = true

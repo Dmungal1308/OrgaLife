@@ -2,6 +2,7 @@ package com.iesvdc.acceso.orgalife.ui.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -33,6 +34,7 @@ class RegistrarActivity : AppCompatActivity() {
         setupObservers()
 
         buttonRegistrar.setOnClickListener {
+            Log.d("RegistrarActivity", "Botón registrar clickeado")
             registrarViewModel.registerUser(
                 usuario = editTextUsuario.text.toString(),
                 nombreCompleto = editTextNombreApellidos.text.toString(),
@@ -41,6 +43,7 @@ class RegistrarActivity : AppCompatActivity() {
                 repeatPassword = editTextRepeatPassword.text.toString()
             )
         }
+
     }
 
     private fun initViews() {
@@ -65,10 +68,7 @@ class RegistrarActivity : AppCompatActivity() {
             error?.let { showToast(it) }
         })
 
-        registrarViewModel.isLoading.observe(this, Observer { loading ->
-            buttonRegistrar.isEnabled = !loading
-            // Aquí podrías mostrar un ProgressBar, etc.
-        })
+
     }
 
     private fun showToast(message: String) {

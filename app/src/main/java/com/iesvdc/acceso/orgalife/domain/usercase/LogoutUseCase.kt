@@ -11,7 +11,8 @@ class LogoutUseCase @Inject constructor(
     operator fun invoke() {
         val prefs = context.getSharedPreferences("SessionPrefs", Context.MODE_PRIVATE)
         prefs.edit {
-            remove("isLoggedIn")
+            remove("jwt_token")
         }
     }
 }
+

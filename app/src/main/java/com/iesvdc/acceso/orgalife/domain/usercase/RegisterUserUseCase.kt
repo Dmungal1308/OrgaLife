@@ -1,19 +1,14 @@
 package com.iesvdc.acceso.orgalife.domain.usercase
 
-import android.util.Patterns
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.FirebaseAuthUserCollisionException
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException
-import com.google.firebase.firestore.FirebaseFirestore
-import com.iesvdc.acceso.orgalife.domain.models.UserData
-import kotlinx.coroutines.tasks.await
+
+import com.iesvdc.acceso.orgalife.data.repository.AuthRepository
 import javax.inject.Inject
 
 
+import android.util.Log
+
 class RegisterUserUseCase @Inject constructor(
-    private val firebaseAuth: FirebaseAuth,
-    private val firestore: FirebaseFirestore
+    private val authRepository: AuthRepository
 ) {
     suspend operator fun invoke(
         usuario: String,
@@ -22,34 +17,22 @@ class RegisterUserUseCase @Inject constructor(
         password: String,
         repeatPassword: String
     ): RegistrationResult {
-        // Validaciones...
-        // ... (tu código)
+        Log.d("RegisterUserUseCase", "Iniciando registro para: $correo")
+        // Validaciones locales...
+        if (correo.isBlank() || password.isBlank()) {
+            return RegistrationResult.Error("Por favor, completa todos los campos.")
+        }
+        if (password != repeatPassword) {
+            return RegistrationResult.Error("Las contraseñas no coinciden.")
+        }
         return try {
-            firebaseAuth.createUserWithEmailAndPassword(correo, password).await()
-            firebaseAuth.currentUser?.sendEmailVerification()?.await()
-            val user = firebaseAuth.currentUser ?: return RegistrationResult.Error("Error: usuario nulo")
-            val userData = UserData(
-                uid = user.uid,
-                usuario = usuario,
-                nombreCompleto = nombreCompleto,
-                email = correo
-            )
-            firestore.collection("usuarios")
-                .document(user.uid)
-                .set(userData)
-                .await()
-            RegistrationResult.Success
+            val result = authRepository.register(correo, password)
+            Log.d("RegisterUserUseCase", "Resultado del registro: $result")
+            result
         } catch (e: Exception) {
-            val errorMsg = when (e) {
-                is FirebaseAuthWeakPasswordException ->
-                    "La contraseña debe tener al menos 6 caracteres"
-                is FirebaseAuthInvalidCredentialsException ->
-                    "El correo electrónico no es válido"
-                is FirebaseAuthUserCollisionException ->
-                    "Ya existe una cuenta con este correo electrónico"
-                else -> "Error en el registro: ${e.message}"
-            }
-            RegistrationResult.Error(errorMsg)
+            Log.e("RegisterUserUseCase", "Error en el registro", e)
+            RegistrationResult.Error("Error en el registro: ${e.message}")
         }
     }
 }
+

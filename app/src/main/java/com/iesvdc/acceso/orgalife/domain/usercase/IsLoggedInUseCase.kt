@@ -9,6 +9,8 @@ class IsLoggedInUseCase @Inject constructor(
 ) {
     operator fun invoke(): Boolean {
         val prefs = context.getSharedPreferences("SessionPrefs", Context.MODE_PRIVATE)
-        return prefs.getBoolean("isLoggedIn", false)
+        val token = prefs.getString("jwt_token", null)
+        return !token.isNullOrEmpty()
     }
 }
+

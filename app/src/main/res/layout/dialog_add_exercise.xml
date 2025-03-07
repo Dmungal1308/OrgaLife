@@ -6,6 +6,12 @@
     android:padding="16dp"
     android:background="@color/superficieContenedorAlta">
 
+    <ImageView
+        android:id="@+id/imageViewExercise"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
     <EditText
         android:id="@+id/editTextName"
         android:layout_width="match_parent"

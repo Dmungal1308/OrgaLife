@@ -14,7 +14,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     application: Application,
     private val loginUserUseCase: LoginUserUseCase,
-    private val resetPasswordUseCase: ResetPasswordUseCase,
+    private val resetPasswordUseCase: ResetPasswordUseCase, // si lo eliminas, quita esto
     private val saveSessionUseCase: SaveSessionUseCase,
     private val isLoggedInUseCase: IsLoggedInUseCase
 ) : AndroidViewModel(application) {
@@ -25,9 +25,6 @@ class LoginViewModel @Inject constructor(
     private val _loginErrorMessage = MutableLiveData<String?>()
     val loginErrorMessage: LiveData<String?> get() = _loginErrorMessage
 
-    private val _emailNotVerified = MutableLiveData<Boolean>()
-    val emailNotVerified: LiveData<Boolean> get() = _emailNotVerified
-
     fun loginUser(email: String, password: String) {
         viewModelScope.launch {
             when (val result = loginUserUseCase(email, password)) {
@@ -35,27 +32,12 @@ class LoginViewModel @Inject constructor(
                     _loginSuccess.value = true
                     _loginErrorMessage.value = null
                 }
-                is LoginResult.EmailNotVerified -> {
-                    _loginSuccess.value = false
-                    _emailNotVerified.value = true
-                }
                 is LoginResult.Error -> {
                     _loginSuccess.value = false
                     _loginErrorMessage.value = result.message
                 }
-            }
-        }
-    }
 
-    fun resetPassword(email: String) {
-        viewModelScope.launch {
-            when (val result = resetPasswordUseCase(email)) {
-                is ResetPasswordResult.Success -> {
-                    _loginErrorMessage.value = "Se ha enviado un correo para restablecer tu contraseña."
-                }
-                is ResetPasswordResult.Error -> {
-                    _loginErrorMessage.value = result.message
-                }
+                LoginResult.EmailNotVerified -> TODO()
             }
         }
     }

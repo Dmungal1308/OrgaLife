@@ -4,13 +4,15 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.iesvdc.acceso.orgalife.domain.models.Exercise
+import androidx.lifecycle.viewModelScope
+import com.iesvdc.acceso.orgalife.data.datasource.network.models.ExerciseResponse
 import com.iesvdc.acceso.orgalife.domain.usercase.AddExerciseUseCase
 import com.iesvdc.acceso.orgalife.domain.usercase.DeleteExerciseUseCase
 import com.iesvdc.acceso.orgalife.domain.usercase.GetExercisesUseCase
 import com.iesvdc.acceso.orgalife.domain.usercase.LogoutUseCase
 import com.iesvdc.acceso.orgalife.domain.usercase.UpdateExerciseUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,29 +25,41 @@ class MenuViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase
 ) : AndroidViewModel(application) {
 
-    private val _exercises = MutableLiveData<List<Exercise>>()
-    val exercises: LiveData<List<Exercise>> get() = _exercises
+    private val _exercises = MutableLiveData<List<ExerciseResponse>>()
+    val exercises: LiveData<List<ExerciseResponse>> get() = _exercises
 
     private val _logoutEvent = MutableLiveData<Boolean>()
     val logoutEvent: LiveData<Boolean> get() = _logoutEvent
 
     init {
-        _exercises.value = getExercisesUseCase().toList()
+        loadExercises()
     }
 
-    fun addExercise(exercise: Exercise) {
-        addExerciseUseCase(exercise)
-        _exercises.value = getExercisesUseCase().toList()
+    fun loadExercises() {
+        viewModelScope.launch {
+            _exercises.value = getExercisesUseCase().toList()
+        }
     }
 
-    fun deleteExercise(exercise: Exercise) {
-        deleteExerciseUseCase(exercise)
-        _exercises.value = getExercisesUseCase().toList()
+    fun addExercise(exercise: ExerciseResponse) {
+        viewModelScope.launch {
+            addExerciseUseCase(exercise)
+            loadExercises()
+        }
     }
 
-    fun updateExercise(oldExercise: Exercise, newExercise: Exercise) {
-        updateExerciseUseCase(oldExercise, newExercise)
-        _exercises.value = getExercisesUseCase().toList()
+    fun deleteExercise(exercise: ExerciseResponse) {
+        viewModelScope.launch {
+            deleteExerciseUseCase(exercise.id)
+            loadExercises()
+        }
+    }
+
+    fun updateExercise(oldExercise: ExerciseResponse, newExercise: ExerciseResponse) {
+        viewModelScope.launch {
+            updateExerciseUseCase(oldExercise.id, newExercise)
+            loadExercises()
+        }
     }
 
     fun logout() {

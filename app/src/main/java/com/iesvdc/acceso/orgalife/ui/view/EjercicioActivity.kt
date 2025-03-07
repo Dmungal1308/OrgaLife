@@ -15,8 +15,8 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.iesvdc.acceso.orgalife.R
+import com.iesvdc.acceso.orgalife.data.datasource.network.models.ExerciseResponse
 import com.iesvdc.acceso.orgalife.ui.adapter.ExerciseAdapter
-import com.iesvdc.acceso.orgalife.domain.models.Exercise
 import com.iesvdc.acceso.orgalife.databinding.ActivityEjercicioBinding
 import com.iesvdc.acceso.orgalife.ui.modelview.EjercicioViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -101,18 +101,20 @@ class EjercicioActivity : AppCompatActivity() {
         AddExerciseDialogFragment().show(supportFragmentManager, "AddExerciseDialog")
     }
 
-    private fun showEditExerciseDialog(exercise: Exercise) {
+    private fun showEditExerciseDialog(exercise: ExerciseResponse) {
         EditExerciseDialogFragment.newInstance(exercise)
             .show(supportFragmentManager, "EditExerciseDialog")
     }
 
     private fun showLogoutConfirmationDialog() {
-        val dialog = LogoutConfirmationDialogFragment()
-        dialog.onLogoutConfirmed = {
-            // Aquí navegas al LoginActivity y cierras la Activity actual
+        val logoutDialog = LogoutConfirmationDialogFragment()
+        logoutDialog.onLogoutConfirmed = {
+            // Aquí ya se ha ejecutado el logout (se ha borrado el token)
+            // Notificamos al ViewModel o navegamos directamente a LoginActivity.
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
-        dialog.show(supportFragmentManager, "LogoutConfirmationDialog")
+        logoutDialog.show(supportFragmentManager, "LogoutConfirmationDialog")
     }
+
 }

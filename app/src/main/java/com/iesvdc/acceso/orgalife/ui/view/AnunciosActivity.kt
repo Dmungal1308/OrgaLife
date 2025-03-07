@@ -107,12 +107,14 @@ class AnunciosActivity : AppCompatActivity() {
     }
 
     private fun showLogoutConfirmationDialog() {
-        val dialog = LogoutConfirmationDialogFragment()
-        dialog.onLogoutConfirmed = {
-            // Aquí navegas al LoginActivity y cierras la Activity actual
+        val logoutDialog = LogoutConfirmationDialogFragment()
+        logoutDialog.onLogoutConfirmed = {
+            // Aquí ya se ha ejecutado el logout (se ha borrado el token)
+            // Notificamos al ViewModel o navegamos directamente a LoginActivity.
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
-        dialog.show(supportFragmentManager, "LogoutConfirmationDialog")
+        logoutDialog.show(supportFragmentManager, "LogoutConfirmationDialog")
     }
+
 }

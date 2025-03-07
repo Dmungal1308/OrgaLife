@@ -6,4 +6,7 @@
     </style>
 
     <style name="Theme.Orgalife" parent="Base.Theme.Orgalife" />
+    <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/pantalla_carga</item>
+    </style>
 </resources>

@@ -9,10 +9,13 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Base64
+import android.util.Log
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.gson.Gson
 import com.iesvdc.acceso.orgalife.R
+import com.iesvdc.acceso.orgalife.data.datasource.network.models.ExerciseRequest
 import com.iesvdc.acceso.orgalife.data.datasource.network.models.ExerciseResponse
 import com.iesvdc.acceso.orgalife.databinding.DialogAddExerciseBinding
 import com.iesvdc.acceso.orgalife.ui.modelview.MenuViewModel
@@ -52,7 +55,17 @@ class AddExerciseDialogFragment : DialogFragment() {
                 }
 
                 if (name.isNotEmpty() && description.isNotEmpty()) {
-                    // Para un ejercicio nuevo, usamos id = 0 y ownerId = 0 (el backend asignará estos valores)
+                    // Crear el objeto de petición
+                    val exerciseRequest = ExerciseRequest(
+                        name = name,
+                        description = description,
+                        imageBase64 = base64Image
+                    )
+                    // Convertirlo a JSON usando serializeNulls para incluir imageBase64 si es null
+                    val jsonString = Gson().newBuilder().serializeNulls().create().toJson(exerciseRequest)
+                    Log.d("JSON_CHECK", "JSON a enviar: $jsonString")
+
+                    // Creamos el ejercicio con id = 0 y ownerId = 0 (el backend asignará los valores correctos)
                     val newExercise = ExerciseResponse(
                         id = 0,
                         name = name,
@@ -64,6 +77,8 @@ class AddExerciseDialogFragment : DialogFragment() {
                     dismiss()
                 }
             }
+
+
             .setNegativeButton("Cancelar", null)
             .create()
 

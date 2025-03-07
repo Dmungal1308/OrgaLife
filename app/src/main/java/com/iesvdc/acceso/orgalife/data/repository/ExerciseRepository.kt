@@ -44,11 +44,6 @@ class ExerciseRepository @Inject constructor(
         }
     }
 
-
-
-
-
-
     suspend fun addExercise(exercise: ExerciseResponse): ExerciseResponse {
         // Crea un ExerciseRequest a partir del Exercise
         val request = ExerciseRequest(
@@ -61,14 +56,18 @@ class ExerciseRepository @Inject constructor(
     }
 
     suspend fun updateExercise(exerciseId: Int, exercise: ExerciseResponse): ExerciseResponse {
+        // Creas el request
         val request = ExerciseRequest(
             name = exercise.name,
             description = exercise.description,
             imageBase64 = exercise.imageBase64
         )
+        // Llamas al API
         val response = exerciseApi.updateExercise(exerciseId, request)
+        // Mapeas la respuesta a tu modelo local
         return mapResponseToExercise(response)
     }
+
 
     suspend fun deleteExercise(exerciseId: Int) {
         exerciseApi.deleteExercise(exerciseId)

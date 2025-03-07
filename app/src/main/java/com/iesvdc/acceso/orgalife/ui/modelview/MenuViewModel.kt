@@ -1,6 +1,7 @@
 package com.iesvdc.acceso.orgalife.ui.modelview
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -57,10 +58,16 @@ class MenuViewModel @Inject constructor(
 
     fun updateExercise(oldExercise: ExerciseResponse, newExercise: ExerciseResponse) {
         viewModelScope.launch {
-            updateExerciseUseCase(oldExercise.id, newExercise)
-            loadExercises()
+            try {
+                updateExerciseUseCase(oldExercise.id, newExercise)
+                loadExercises()
+            } catch (e: Exception) {
+                // Maneja el error: muestra un mensaje al usuario o registra el error
+                Log.e("MenuViewModel", "Error al actualizar ejercicio", e)
+            }
         }
     }
+
 
     fun logout() {
         logoutUseCase()

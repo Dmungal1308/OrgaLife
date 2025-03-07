@@ -3,12 +3,14 @@ package com.iesvdc.acceso.orgalife.domain.usercase
 import com.iesvdc.acceso.orgalife.data.repository.AuthRepository
 import javax.inject.Inject
 import android.util.Log
+import com.iesvdc.acceso.orgalife.domain.models.UserData
 
 sealed class LoginResult {
-    object Success : LoginResult()
-    object EmailNotVerified : LoginResult()
+    data class Success(val user: UserData) : LoginResult()
     data class Error(val message: String) : LoginResult()
+    object EmailNotVerified : LoginResult()
 }
+
 
 class LoginUserUseCase @Inject constructor(
     private val authRepository: AuthRepository

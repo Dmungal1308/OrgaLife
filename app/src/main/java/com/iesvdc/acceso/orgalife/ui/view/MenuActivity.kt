@@ -3,6 +3,7 @@ package com.iesvdc.acceso.orgalife.ui.view
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
@@ -75,8 +76,10 @@ class MenuActivity : AppCompatActivity() {
 
         // Observamos los LiveData del ViewModel
         menuViewModel.exercises.observe(this, Observer { list ->
+            Log.d("MenuActivity", "Ejercicios recibidos: ${list.size}")
             exerciseAdapter.setExercises(list)
         })
+
         menuViewModel.logoutEvent.observe(this) { isLoggedOut ->
             if (isLoggedOut) {
                 menuViewModel.resetLogoutEvent()

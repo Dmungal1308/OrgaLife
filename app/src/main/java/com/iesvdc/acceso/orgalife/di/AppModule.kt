@@ -22,7 +22,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideExerciseRepository(exerciseApi: ExerciseApi): ExerciseRepository = ExerciseRepository(exerciseApi)
+    fun provideExerciseRepository(exerciseApi: ExerciseApi, @ApplicationContext context: Context): ExerciseRepository = ExerciseRepository(exerciseApi, context)
 
 
     @Provides

@@ -5,6 +5,7 @@ import android.util.Log
 import com.iesvdc.acceso.orgalife.data.datasource.network.AuthApi
 import com.iesvdc.acceso.orgalife.data.datasource.network.models.LoginRequest
 import com.iesvdc.acceso.orgalife.data.datasource.network.models.RegisterRequest
+import com.iesvdc.acceso.orgalife.domain.models.UserData
 import com.iesvdc.acceso.orgalife.domain.usercase.LoginResult
 import com.iesvdc.acceso.orgalife.domain.usercase.RegistrationResult
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -19,15 +20,29 @@ class AuthRepository @Inject constructor(
         return try {
             val response = authApi.login(LoginRequest(email, password))
             Log.d("AuthRepository", "Response from API: $response")
-            val token = response["token"]
+            val token = response.token
             if (!token.isNullOrEmpty()) {
                 val prefs = context.getSharedPreferences("SessionPrefs", Context.MODE_PRIVATE)
-                prefs.edit().putString("jwt_token", token).apply()
-                Log.d("AuthRepository", "Token guardado: $token")
-                LoginResult.Success
+                prefs.edit().apply {
+                    putString("jwt_token", token)
+                    putInt("user_id", 13) // o el id real que te devuelva la API
+                    apply()
+                }
+                Log.d("AuthRepository", "Guardado user_id: ${prefs.getInt("user_id", -1)}")
+
+                Log.d("AuthRepository", "Token guardado en SharedPreferences: ${prefs.getString("jwt_token", "null")}")
+
+                val userData = UserData(
+                    uid = 13,  // Extrae el id real del token o de la respuesta
+                    usuario = email,
+                    nombreCompleto = "Desconocido",
+                    email = email
+                )
+
+                LoginResult.Success(userData)
             } else {
-                Log.e("AuthRepository", "Error de API: ${response["error"]}")
-                LoginResult.Error(response["error"] ?: "Error desconocido")
+                Log.e("AuthRepository", "Error de API: ${response.error}")
+                LoginResult.Error(response.error ?: "Error desconocido")
             }
         } catch (e: Exception) {
             Log.e("AuthRepository", "Exception in login", e)
@@ -35,12 +50,11 @@ class AuthRepository @Inject constructor(
         }
     }
 
-
     suspend fun register(email: String, password: String): RegistrationResult {
         return try {
             val response = authApi.register(RegisterRequest(email, password))
-            if (response["error"] != null) {
-                RegistrationResult.Error(response["error"].toString())
+            if (response.error != null) {
+                RegistrationResult.Error(response.error)
             } else {
                 RegistrationResult.Success
             }

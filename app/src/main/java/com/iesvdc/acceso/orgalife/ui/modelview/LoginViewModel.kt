@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.iesvdc.acceso.orgalife.domain.models.UserData
 import com.iesvdc.acceso.orgalife.domain.usercase.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -25,10 +26,14 @@ class LoginViewModel @Inject constructor(
     private val _loginErrorMessage = MutableLiveData<String?>()
     val loginErrorMessage: LiveData<String?> get() = _loginErrorMessage
 
+    private var loggedUser: UserData? = null
+
     fun loginUser(email: String, password: String) {
         viewModelScope.launch {
             when (val result = loginUserUseCase(email, password)) {
                 is LoginResult.Success -> {
+                    loggedUser = result.user  // Almacena el usuario logueado
+                    saveSessionUseCase(result.user.uid)
                     _loginSuccess.value = true
                     _loginErrorMessage.value = null
                 }
@@ -36,14 +41,17 @@ class LoginViewModel @Inject constructor(
                     _loginSuccess.value = false
                     _loginErrorMessage.value = result.message
                 }
-
-                LoginResult.EmailNotVerified -> TODO()
+                LoginResult.EmailNotVerified -> {
+                    // Implementa lo que necesites para el email no verificado
+                }
             }
         }
     }
 
     fun saveSession() {
-        saveSessionUseCase()
+        loggedUser?.let { user ->
+            saveSessionUseCase(user.uid)
+        }
     }
 
     fun isLoggedIn(): Boolean {

@@ -32,7 +32,7 @@ class ExerciseRepository @Inject constructor(
             // Si filtras por ownerId, verifica el valor de currentUserId
             // Después de recibir la respuesta exitosa de login:
             val prefs = context.getSharedPreferences("SessionPrefs", Context.MODE_PRIVATE)
-            val currentUserId = prefs.getInt("user_id", 13)
+            val currentUserId = prefs.getInt("user_id", 15)
             Log.d("ExerciseRepository", "currentUserId: $currentUserId")
             response.filter { it.ownerId == currentUserId }
         } catch (e: retrofit2.HttpException) {

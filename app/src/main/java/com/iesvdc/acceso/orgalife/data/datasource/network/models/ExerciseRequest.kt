@@ -4,7 +4,6 @@ data class ExerciseRequest(
     val name: String,
     val description: String?,
     val imageBase64: String?
-    // El ownerId lo extraerás del token en el backend o lo envías desde el cliente, según tu implementación
 )
 
 data class ExerciseResponse(

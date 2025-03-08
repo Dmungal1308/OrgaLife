@@ -28,10 +28,8 @@ class MenuActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMenuBinding
     private lateinit var drawerLayout: DrawerLayout
 
-    // Inyectamos el ViewModel con Hilt
     private val menuViewModel: MenuViewModel by viewModels()
 
-    // Creamos el adapter (sin lista inicial)
     private val exerciseAdapter = ExerciseAdapter(
         onDeleteClicked = { exercise -> menuViewModel.deleteExercise(exercise) },
         onEditClicked = { exercise -> showEditExerciseDialog(exercise) },
@@ -74,7 +72,6 @@ class MenuActivity : AppCompatActivity() {
             startActivity(Intent(this, MenuActivity::class.java))
         }
 
-        // Observamos los LiveData del ViewModel
         menuViewModel.exercises.observe(this, Observer { list ->
             Log.d("MenuActivity", "Ejercicios recibidos: ${list.size}")
             exerciseAdapter.setExercises(list)
@@ -99,8 +96,6 @@ class MenuActivity : AppCompatActivity() {
     private fun showLogoutConfirmationDialog() {
         val logoutDialog = LogoutConfirmationDialogFragment()
         logoutDialog.onLogoutConfirmed = {
-            // Aquí ya se ha ejecutado el logout (se ha borrado el token)
-            // Notificamos al ViewModel o navegamos directamente a LoginActivity.
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }

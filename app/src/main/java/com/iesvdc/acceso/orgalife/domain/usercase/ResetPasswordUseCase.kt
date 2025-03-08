@@ -8,9 +8,7 @@ sealed class ResetPasswordResult {
     data class Error(val message: String) : ResetPasswordResult()
 }
 
-/**
- * Caso de uso para restablecer la contraseña vía Firebase.
- */
+
 class ResetPasswordUseCase @Inject constructor(
 ) {
 

@@ -35,7 +35,7 @@ object NetworkModule {
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit { // Inyecta el OkHttpClient aquí
         return Retrofit.Builder()
             .baseUrl("http://192.168.1.147:8080/")
-            .client(okHttpClient) // Usa el cliente que añade el token
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

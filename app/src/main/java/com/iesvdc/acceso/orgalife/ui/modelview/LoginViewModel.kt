@@ -15,7 +15,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     application: Application,
     private val loginUserUseCase: LoginUserUseCase,
-    private val resetPasswordUseCase: ResetPasswordUseCase, // si lo eliminas, quita esto
+    private val resetPasswordUseCase: ResetPasswordUseCase,
     private val saveSessionUseCase: SaveSessionUseCase,
     private val isLoggedInUseCase: IsLoggedInUseCase
 ) : AndroidViewModel(application) {
@@ -32,7 +32,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             when (val result = loginUserUseCase(email, password)) {
                 is LoginResult.Success -> {
-                    loggedUser = result.user  // Almacena el usuario logueado
+                    loggedUser = result.user
                     saveSessionUseCase(result.user.uid)
                     _loginSuccess.value = true
                     _loginErrorMessage.value = null
@@ -42,7 +42,6 @@ class LoginViewModel @Inject constructor(
                     _loginErrorMessage.value = result.message
                 }
                 LoginResult.EmailNotVerified -> {
-                    // Implementa lo que necesites para el email no verificado
                 }
             }
         }

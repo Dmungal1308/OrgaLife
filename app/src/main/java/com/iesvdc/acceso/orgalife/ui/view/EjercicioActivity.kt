@@ -27,10 +27,8 @@ class EjercicioActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEjercicioBinding
     private lateinit var drawerLayout: DrawerLayout
 
-    // Inyectamos el ViewModel con Hilt
     private val ejercicioViewModel: EjercicioViewModel by viewModels()
 
-    // Adapter que se configurará con las acciones delegadas al ViewModel
     private lateinit var adapter: ExerciseAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,17 +43,14 @@ class EjercicioActivity : AppCompatActivity() {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
 
-        // Configurar los insets para la barra de sistema
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        // Configurar RecyclerView y Adapter
         adapter = ExerciseAdapter(
             onDeleteClicked = { exercise ->
-                // Delegamos al ViewModel
                 ejercicioViewModel.deleteExercise(exercise)
             },
             onEditClicked = { exercise ->
@@ -68,12 +63,10 @@ class EjercicioActivity : AppCompatActivity() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
 
-        // Observamos el LiveData del ViewModel para actualizar el Adapter
         ejercicioViewModel.exercises.observe(this, Observer { updatedExercises ->
             adapter.setExercises(updatedExercises)
         })
 
-        // Configuramos listeners para botones y otros elementos de la UI
         binding.addExerciseButton.setOnClickListener { showAddExerciseDialog() }
         binding.imageButton.setOnClickListener { toggleDrawer() }
         binding.root.findViewById<ImageButton>(R.id.botonFlecha).setOnClickListener { toggleDrawer() }
@@ -109,8 +102,6 @@ class EjercicioActivity : AppCompatActivity() {
     private fun showLogoutConfirmationDialog() {
         val logoutDialog = LogoutConfirmationDialogFragment()
         logoutDialog.onLogoutConfirmed = {
-            // Aquí ya se ha ejecutado el logout (se ha borrado el token)
-            // Notificamos al ViewModel o navegamos directamente a LoginActivity.
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }

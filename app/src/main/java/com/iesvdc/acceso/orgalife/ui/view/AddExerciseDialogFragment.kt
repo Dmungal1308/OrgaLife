@@ -30,7 +30,6 @@ class AddExerciseDialogFragment : DialogFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        // Obtenemos el mismo ViewModel que la Activity
         menuViewModel = ViewModelProvider(requireActivity()).get(MenuViewModel::class.java)
     }
 
@@ -44,7 +43,6 @@ class AddExerciseDialogFragment : DialogFragment() {
                 val name = binding.editTextName.text.toString().trim()
                 val description = binding.editTextDescription.text.toString().trim()
 
-                // Convertir la imagen a Base64 si existe
                 val imageDrawable = binding.imageViewExercise.drawable
                 var base64Image: String? = null
                 if (imageDrawable != null) {
@@ -55,17 +53,14 @@ class AddExerciseDialogFragment : DialogFragment() {
                 }
 
                 if (name.isNotEmpty() && description.isNotEmpty()) {
-                    // Crear el objeto de petición
                     val exerciseRequest = ExerciseRequest(
                         name = name,
                         description = description,
                         imageBase64 = base64Image
                     )
-                    // Convertirlo a JSON usando serializeNulls para incluir imageBase64 si es null
                     val jsonString = Gson().newBuilder().serializeNulls().create().toJson(exerciseRequest)
                     Log.d("JSON_CHECK", "JSON a enviar: $jsonString")
 
-                    // Creamos el ejercicio con id = 0 y ownerId = 0 (el backend asignará los valores correctos)
                     val newExercise = ExerciseResponse(
                         id = 0,
                         name = name,
@@ -98,7 +93,6 @@ class AddExerciseDialogFragment : DialogFragment() {
         return dialog
     }
 
-    // Función para convertir un Drawable a Bitmap
     private fun drawableToBitmap(drawable: Drawable): Bitmap? {
         return if (drawable is BitmapDrawable) {
             drawable.bitmap
@@ -113,10 +107,8 @@ class AddExerciseDialogFragment : DialogFragment() {
         }
     }
 
-    // Función para convertir un Bitmap a Base64
     private fun encodeToBase64(bitmap: Bitmap): String {
         val outputStream = ByteArrayOutputStream()
-        // Usamos PNG para mantener la calidad; ajusta si es necesario
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
         val imageBytes = outputStream.toByteArray()
         return Base64.encodeToString(imageBytes, Base64.DEFAULT)

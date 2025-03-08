@@ -11,7 +11,6 @@ import com.iesvdc.acceso.orgalife.domain.models.Anuncio
 class AnuncioAdapter(private var anuncios: List<Anuncio>) :
     RecyclerView.Adapter<AnuncioAdapter.AnuncioViewHolder>() {
 
-    // Metodo para refrescar la lista de anuncios desde la Activity/Fragment
     fun setAnuncios(newList: List<Anuncio>) {
         anuncios = newList
         notifyDataSetChanged()

@@ -23,7 +23,6 @@ class RegistrarActivity : AppCompatActivity() {
     private lateinit var editTextRepeatPassword: EditText
     private lateinit var buttonRegistrar: Button
 
-    // Inyectamos el ViewModel con Hilt
     private val registrarViewModel: RegistrarViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -21,7 +21,6 @@ class SplashViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            // Invoca el caso de uso; por defecto espera 1000 ms y retorna true.
             _navigateToLoginEvent.value = waitForSplashUseCase()
         }
     }

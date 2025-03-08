@@ -7,7 +7,6 @@ import javax.inject.Inject
 class UpdateExerciseUseCase @Inject constructor(
     private val exerciseRepository: ExerciseRepository
 ) {
-    // Devuelve el objeto actualizado o lanza un error si es null
     suspend operator fun invoke(exerciseId: Int, exercise: ExerciseResponse): ExerciseResponse {
         return exerciseRepository.updateExercise(exerciseId, exercise)
     }

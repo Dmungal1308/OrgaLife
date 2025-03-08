@@ -34,7 +34,6 @@ class LoginActivity : AppCompatActivity() {
             window.decorView.systemUiVisibility = android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
 
-        // Verificar si la sesión ya está iniciada
         if (loginViewModel.isLoggedIn()) {
             startActivity(Intent(this, MenuActivity::class.java))
             finish()

@@ -32,7 +32,6 @@ class EjercicioViewModel @Inject constructor(
 
     private fun loadExercises() {
         viewModelScope.launch {
-            // Llama al UseCase suspendido y actualiza la LiveData
             _exercises.value = getExercisesUseCase()
         }
     }
@@ -46,7 +45,6 @@ class EjercicioViewModel @Inject constructor(
 
     fun deleteExercise(exercise: ExerciseResponse) {
         viewModelScope.launch {
-            // Suponiendo que el DeleteExerciseUseCase ahora recibe el id del ejercicio
             deleteExerciseUseCase(exercise.id)
             loadExercises()
         }
@@ -54,7 +52,6 @@ class EjercicioViewModel @Inject constructor(
 
     fun updateExercise(oldExercise: ExerciseResponse, newExercise: ExerciseResponse) {
         viewModelScope.launch {
-            // Suponiendo que el UpdateExerciseUseCase ahora recibe el id y el nuevo ejercicio
             updateExerciseUseCase(oldExercise.id, newExercise)
             loadExercises()
         }

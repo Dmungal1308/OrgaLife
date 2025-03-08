@@ -39,19 +39,15 @@ class ExerciseAdapter(
             binding.textExerciseName.text = exercise.name
             binding.textExerciseDescription.text = exercise.description
 
-            // Si exercise.imageBase64 no está vacío, decodificamos y cargamos con Glide
             val base64String = exercise.imageBase64
             if (!base64String.isNullOrEmpty()) {
-                // Decodificamos la cadena en bytes
                 val decodedBytes = android.util.Base64.decode(base64String, android.util.Base64.DEFAULT)
 
-                // Cargamos con Glide
                 Glide.with(binding.root.context)
-                    .asBitmap()           // indicamos que lo interpretaremos como bitmap
-                    .load(decodedBytes)   // pasamos el array de bytes
+                    .asBitmap()
+                    .load(decodedBytes)
                     .into(binding.imageExercise)
             } else {
-                // Si está vacío o null, podrías poner un placeholder
                 binding.imageExercise.setImageResource(R.mipmap.ic_icono_principal_foreground)
             }
 

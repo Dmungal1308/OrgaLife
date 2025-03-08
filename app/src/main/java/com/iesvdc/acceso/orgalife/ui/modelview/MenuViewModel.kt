@@ -62,7 +62,6 @@ class MenuViewModel @Inject constructor(
                 updateExerciseUseCase(oldExercise.id, newExercise)
                 loadExercises()
             } catch (e: Exception) {
-                // Maneja el error: muestra un mensaje al usuario o registra el error
                 Log.e("MenuViewModel", "Error al actualizar ejercicio", e)
             }
         }

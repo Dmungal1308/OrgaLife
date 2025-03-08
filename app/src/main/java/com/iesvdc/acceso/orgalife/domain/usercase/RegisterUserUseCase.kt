@@ -18,7 +18,6 @@ class RegisterUserUseCase @Inject constructor(
         repeatPassword: String
     ): RegistrationResult {
         Log.d("RegisterUserUseCase", "Iniciando registro para: $correo")
-        // Validaciones locales...
         if (correo.isBlank() || password.isBlank()) {
             return RegistrationResult.Error("Por favor, completa todos los campos.")
         }

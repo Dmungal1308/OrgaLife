@@ -25,7 +25,7 @@ class AuthRepository @Inject constructor(
                 val prefs = context.getSharedPreferences("SessionPrefs", Context.MODE_PRIVATE)
                 prefs.edit().apply {
                     putString("jwt_token", token)
-                    putInt("user_id", 15) // o el id real que te devuelva la API
+                    putInt("user_id", 15)
                     apply()
                 }
                 Log.d("AuthRepository", "Guardado user_id: ${prefs.getInt("user_id", -1)}")
@@ -33,7 +33,7 @@ class AuthRepository @Inject constructor(
                 Log.d("AuthRepository", "Token guardado en SharedPreferences: ${prefs.getString("jwt_token", "null")}")
 
                 val userData = UserData(
-                    uid = 15,  // Extrae el id real del token o de la respuesta
+                    uid = 15,
                     usuario = email,
                     nombreCompleto = "Desconocido",
                     email = email

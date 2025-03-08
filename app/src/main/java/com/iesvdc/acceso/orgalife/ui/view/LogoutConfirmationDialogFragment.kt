@@ -13,11 +13,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class LogoutConfirmationDialogFragment : DialogFragment() {
 
-    // Inyectamos el caso de uso de logout
     @Inject
     lateinit var logoutUseCase: LogoutUseCase
 
-    // Callback para notificar a la Activity que se realizó el logout y se debe redirigir a LoginActivity.
     var onLogoutConfirmed: (() -> Unit)? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -25,16 +23,13 @@ class LogoutConfirmationDialogFragment : DialogFragment() {
             .setTitle("Cerrar Sesión")
             .setMessage("¿Estás seguro de que deseas cerrar sesión?")
             .setPositiveButton("Sí") { _, _ ->
-                // Ejecuta el logout borrando el token en SharedPreferences
                 logoutUseCase()
-                // Notifica a la Activity para que, por ejemplo, navegue a LoginActivity y limpie el estado en memoria.
                 onLogoutConfirmed?.invoke()
             }
             .setNegativeButton("No", null)
 
         val dialog = builder.create()
 
-        // Personalización de estilos
         dialog.setOnShowListener {
             dialog.window?.setBackgroundDrawableResource(R.color.superficieContenedorAlta)
 

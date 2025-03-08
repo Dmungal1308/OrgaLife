@@ -34,13 +34,10 @@ class EditExerciseDialogFragment : DialogFragment() {
     private var _binding: DialogEditExerciseBinding? = null
     private val binding get() = _binding!!
 
-    // ViewModel para actualizar el ejercicio
     private lateinit var menuViewModel: MenuViewModel
 
-    // Ejercicio que se edita
     private lateinit var exercise: ExerciseResponse
 
-    // Uri donde se guardará la foto tomada (en la galería)
     private var photoUri: Uri? = null
 
     companion object {
@@ -51,7 +48,6 @@ class EditExerciseDialogFragment : DialogFragment() {
         }
     }
 
-    // Solicitar permiso de cámara
     private val requestCameraPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
@@ -61,7 +57,6 @@ class EditExerciseDialogFragment : DialogFragment() {
             }
         }
 
-    // Resultado de la cámara
     private val takePhotoLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -71,7 +66,6 @@ class EditExerciseDialogFragment : DialogFragment() {
             }
         }
 
-    // Resultado de la galería
     private val selectFromGalleryLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -92,11 +86,9 @@ class EditExerciseDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         _binding = DialogEditExerciseBinding.inflate(layoutInflater)
 
-        // Inicializar campos con la info del ejercicio
         binding.editTextName.setText(exercise.name)
         binding.editTextDescription.setText(exercise.description)
 
-        // Si ya hay imagen en Base64, cargarla
         if (!exercise.imageBase64.isNullOrEmpty()) {
             val bytes = Base64.decode(exercise.imageBase64, Base64.DEFAULT)
             Glide.with(requireContext())
@@ -105,7 +97,6 @@ class EditExerciseDialogFragment : DialogFragment() {
                 .into(binding.imageViewExercise)
         }
 
-        // Botón "Tomar foto"
         binding.buttonTakePhoto.setOnClickListener {
             if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED
@@ -116,7 +107,6 @@ class EditExerciseDialogFragment : DialogFragment() {
             }
         }
 
-        // Botón "Seleccionar de galería"
         binding.buttonSelectFromGallery.setOnClickListener {
             openGallery()
         }
@@ -128,7 +118,6 @@ class EditExerciseDialogFragment : DialogFragment() {
                 val name = binding.editTextName.text.toString().trim()
                 val description = binding.editTextDescription.text.toString().trim()
 
-                // Convertir la imagen a Base64 si existe
                 val imageDrawable = binding.imageViewExercise.drawable
                 var base64Image: String? = null
                 if (imageDrawable != null) {
@@ -139,7 +128,6 @@ class EditExerciseDialogFragment : DialogFragment() {
                 }
 
                 if (name.isNotEmpty() && description.isNotEmpty()) {
-                    // Se conserva el id y ownerId originales
                     val updatedExercise = ExerciseResponse(
                         id = exercise.id,
                         name = name,
@@ -171,7 +159,6 @@ class EditExerciseDialogFragment : DialogFragment() {
         return dialog
     }
 
-    // Abre la cámara y guarda la foto
     private fun openCamera() {
         val contentValues = ContentValues().apply {
             put(MediaStore.Images.Media.TITLE, "Nueva imagen")
@@ -186,14 +173,12 @@ class EditExerciseDialogFragment : DialogFragment() {
         takePhotoLauncher.launch(intent)
     }
 
-    // Abre la galería
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
         selectFromGalleryLauncher.launch(intent)
     }
 
-    // Convierte un Drawable a Bitmap
     private fun drawableToBitmap(drawable: Drawable): Bitmap? {
         return if (drawable is BitmapDrawable) {
             drawable.bitmap
@@ -208,7 +193,6 @@ class EditExerciseDialogFragment : DialogFragment() {
         }
     }
 
-    // Convierte un Bitmap a Base64
     private fun encodeToBase64(bitmap: Bitmap): String {
         val outputStream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)

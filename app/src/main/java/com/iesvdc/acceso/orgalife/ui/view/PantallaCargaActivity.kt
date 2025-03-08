@@ -33,7 +33,6 @@ class PantallaCargaActivity : AppCompatActivity() {
             insets
         }
 
-        // Observamos el evento de navegación
         splashViewModel.navigateToLoginEvent.observe(this) { shouldNavigate ->
             if (shouldNavigate == true) {
                 startActivity(Intent(this, LoginActivity::class.java))

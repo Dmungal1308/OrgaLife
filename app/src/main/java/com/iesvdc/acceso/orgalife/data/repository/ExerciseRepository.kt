@@ -14,7 +14,6 @@ class ExerciseRepository @Inject constructor(
     private val exerciseApi: ExerciseApi,
     @ApplicationContext private val context: Context
 ) {
-    // Convierte ExerciseResponse a Exercise
     private fun mapResponseToExercise(response: ExerciseResponse): ExerciseResponse {
         return ExerciseResponse(
             id = response.id,
@@ -29,8 +28,6 @@ class ExerciseRepository @Inject constructor(
         return try {
             val response = exerciseApi.getExercises()
             Log.d("ExerciseRepository", "Respuesta de getExercises: $response")
-            // Si filtras por ownerId, verifica el valor de currentUserId
-            // Después de recibir la respuesta exitosa de login:
             val prefs = context.getSharedPreferences("SessionPrefs", Context.MODE_PRIVATE)
             val currentUserId = prefs.getInt("user_id", 15)
             Log.d("ExerciseRepository", "currentUserId: $currentUserId")
@@ -45,7 +42,6 @@ class ExerciseRepository @Inject constructor(
     }
 
     suspend fun addExercise(exercise: ExerciseResponse): ExerciseResponse {
-        // Crea un ExerciseRequest a partir del Exercise
         val request = ExerciseRequest(
             name = exercise.name,
             description = exercise.description,
@@ -56,15 +52,12 @@ class ExerciseRepository @Inject constructor(
     }
 
     suspend fun updateExercise(exerciseId: Int, exercise: ExerciseResponse): ExerciseResponse {
-        // Creas el request
         val request = ExerciseRequest(
             name = exercise.name,
             description = exercise.description,
             imageBase64 = exercise.imageBase64
         )
-        // Llamas al API
         val response = exerciseApi.updateExercise(exerciseId, request)
-        // Mapeas la respuesta a tu modelo local
         return mapResponseToExercise(response)
     }
 
